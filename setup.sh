@@ -14,27 +14,27 @@ ssh-copy-id -i ~/.ssh/eitn30-pi.pub $address
 
 # Start ssh
 
-echo -e "LangGeNot5G" | ssh $address 
+# echo "LangGeNot5G" | ssh $address 
 
 # Configure git 
 
-git config --global user.email "vincent.palmer@hotmail.com"
-git config --global user.name "InternetInuti"
+# git config --global user.email "vincent.palmer@hotmail.com"
+# git config --global user.name "InternetInuti"
 
 # Fix Git repo
 
-if [ -d "~/EITN30" ]
-then 
-	echo "Repo exists, Updating"
-	cd ~/EITN30
-	git pull
-else
-	echo "Repo missing, Cloning"
-	git clone $repo
+# if [ -d "~/EITN30" ]
+# then 
+#	echo "Repo exists, Updating"
+#	cd ~/EITN30
+#	git pull
+# else
+#	echo "Repo missing, Cloning"
+#	git clone $repo
 
-fi
+# fi
 
-cd ~/EITN30
+# cd ~/EITN30
 
 # Installing dependencies
 
