@@ -5,18 +5,18 @@ import digitalio as dio
 import argparse
 
 SPI0 = {
-    'MOSI':10,#dio.DigitalInOut(board.D10),
-    'MISO':9,#dio.DigitalInOut(board.D9),
-    'clock':11,#dio.DigitalInOut(board.D11),
+    'MOSI':10,#dio.DigitalInOut(board.D10)
+    'MISO':9,#dio.DigitalInOut(board.D9)
+    'clock':11,#dio.DigitalInOut(board.D11)
     'ce':dio.DigitalInOut(board.D17),
-    'csn':dio.DigitalInOut(board.D8),
+    'csn':dio.DigitalInOut(board.D8)
     }
 SPI1 = {
-    'MOSI':20,#dio.DigitalInOut(board.D10),
-    'MISO':19,#dio.DigitalInOut(board.D9),
-    'clock':21,#dio.DigitalInOut(board.D11),
-    'ce':dio.DigitalInOut(board.D27),
-    'csn':dio.DigitalInOut(board.D18),
+    'MOSI':20,#dio.DigitalInOut(board.D20)
+    'MISO':19,#dio.DigitalInOut(board.D19)
+    'clock':21,#dio.DigitalInOut(board.D21)
+    "ce":dio.DigitalInOut(board.D27),
+    'csn':dio.DigitalInOut(board.D18)
     }
 
 if __name__ == "__main__":
@@ -34,7 +34,12 @@ if __name__ == "__main__":
     SPI1['spi'] = busio.SPI(**{x: SPI1[x] for x in ['clock', 'MOSI', 'MISO']})
 
     # initialize the nRF24L01 on the spi bus object
-    rx_nrf = RF24(**{x: SPI0[x] for x in ['spi', 'csn', 'ce']})
-    tx_nrf = RF24(**{x: SPI1[x] for x in ['spi', 'csn', 'ce']})
 
-    print('nRF24L01+ found on SPI0: {}, SPI1: {}'.format(rx_nrf, tx_nrf))
+    print(SPI0["ce"], SPI1["ce"])
+    #rx_nrf = RF24(**{x: SPI0[x] for x in ['spi', 'csn', "ce"]})
+    rx_nrf = RF24(SPI0['spi'], SPI0['csn'], SPI0['ce'])
+    
+    #tx_nrf = RF24(**{x: SPI1[x] for x in ['spi', 'csn', "ce"]})
+    tx_nrf = RF24(SPI1['spi'], SPI1['csn'], SPI1['ce'])
+
+    print(f'nRF24L01+ found on SPI0: {rx_nrf}, SPI1: {tx_nrf}')
