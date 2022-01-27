@@ -14,8 +14,11 @@ git config --global user.name "InternetInuti"
 
 
 # Installing dependencies
+#echo -e "LangGeNot5G" | sudo apt-get update
+#sudo apt-get upgrade 
 
-
+echo -e "LangGeNot5G" | sudo pip3 install Adafruit-Blinka
+pip3 install circuitpython-nrf24l01
 
 
 echo "Done with setup!"
