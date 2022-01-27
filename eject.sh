@@ -9,5 +9,5 @@ git push
 cd ..
 rm -rf EITN30
 
-exit
+
 
