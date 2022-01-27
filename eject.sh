@@ -5,11 +5,11 @@
 git add .
 git commit -m "Commit before cleaning"
 git push
- 
+
 cd ..
 rm -rf EITN30
 
-source exit
+exit ; exit
 
 
 
