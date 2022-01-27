@@ -7,9 +7,9 @@ git commit -m "Commit before cleaning"
 git push
 
 cd ..
+
 rm -rf EITN30
 
 echo "Done with clean, type exit to exit ssh connection!"
 
-exit 0
 
