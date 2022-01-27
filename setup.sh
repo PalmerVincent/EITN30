@@ -39,3 +39,4 @@ ssh-copy-id -i ~/.ssh/eitn30-pi.pub $address
 # Installing dependencies
 
 
+echo "hej"
