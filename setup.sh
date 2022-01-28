@@ -20,5 +20,5 @@ echo $pass | sudo -s apt-get upgrade
 echo $pass | sudo pip3 install Adafruit-Blinka
 echo $pass | sudo pip3 install circuitpython-nrf24l01
 
-
+clear
 echo "Done with setup!"
