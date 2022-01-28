@@ -102,8 +102,12 @@ if __name__ == "__main__":
     SPI1['spi'] = busio.SPI(**{x: SPI1[x] for x in ['clock', 'MOSI', 'MISO']})
 
     # initialize the nRF24L01 on the spi bus object
-    rx_nrf = RF24(**{x: SPI0[x] for x in ['spi', 'csn', 'ce']})
-    tx_nrf = RF24(**{x: SPI1[x] for x in ['spi', 'csn', 'ce']})
+    #rx_nrf = RF24(**{x: SPI0[x] for x in ['spi', 'csn', 'ce']})
+    rx_nrf = RF24(SPI0['spi'], SPI0['csn'], SPI0['ce'])
+
+    #tx_nrf = RF24(**{x: SPI1[x] for x in ['spi', 'csn', 'ce']})
+    tx_nrf = RF24(SPI1['spi'], SPI1['csn'], SPI1['ce'])
+
 
     for nrf in [rx_nrf, tx_nrf]:
         nrf.data_rate = 1
