@@ -59,7 +59,7 @@ python3 -m pip install --upgrade pip setuptools
 
 
 
-if [[ -e "/usr/lib/arm-linux-gnueabihf/libboost_python3.so"]] 
+if [[ -e "/usr/lib/arm-linux-gnueabihf/libboost_python3.so" ]] 
 then
     sudo rm /usr/lib/arm-linux-gnueabihf/libboost_python3.so
 fi
