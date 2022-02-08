@@ -8,7 +8,7 @@ git push
 
 cd ..
 
-sudo rm -rf EITN30
+sudo rm -rf ~/git
 
 echo "Done with clean, type exit to exit ssh connection!"
 
