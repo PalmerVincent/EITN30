@@ -9,8 +9,8 @@ pass="LangGeNot5G"
 
 # Configure git 
 
-git config --global user.email "vincent.palmer@hotmail.com"
-git config --global user.name "InternetInuti"
+git config --global user.email "notmy@email.com"
+git config --global user.name "InternetInutiPi"
 
 
 # Installing dependencies

@@ -1,3 +1,0 @@
-Adafruit-Blinka
-adafruit-circuitpython-busdevice
-spidev; sys_platform == 'linux'
