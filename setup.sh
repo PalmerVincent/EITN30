@@ -34,6 +34,18 @@ else
     git clone $repo
 fi
 
+if [[ -f "/usr/include/RF24/" ]]
+then
+    echo "Library exists"
+else
+    cd ~/git/EITN30/
+    wget "http://tmrh20.github.io/RF24Installer/RPi/install.sh"
+    chmod +x install.sh
+    ./install.sh
+    echo "Library is installed"
+fi
+
+
 
 # Installing dependancies
 
@@ -43,19 +55,12 @@ echo $pass | sudo -S apt-get install python3-dev libboost-python-dev python3-pip
 python3 -m pip install --upgrade pip setuptools
 
 
-if [[ -f "/usr/include/RF24/" ]]
-then
-    echo "Library exists"
-else
-    cd ~/git/EITN30/
-    wget "https://github.com/nRF24/RF24/releases/download/v1.4.2/librf24-RPi_1.4.2-1_armhf.deb"
-    echo $pass | sudo -S dpkg -i librf24-RPi*armhf.deb
-    rm librf24-RPi*armhf.deb
-    echo "Library is installed"
-fi
+
 
 
 sudo ln -s $(ls /usr/lib/$(ls /usr/lib/gcc | tail -1)/libboost_python3*.so | tail -1) /usr/lib/$(ls /usr/lib/gcc | tail -1)/libboost_python3.so
+
+
 
 
 # Navigating for cloning repo, building wrapper
