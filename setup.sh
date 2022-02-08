@@ -14,24 +14,22 @@ git config --global user.name "InternetInutiPi"
 
 # Installing repo
 
-echo $repofolder
 
-if [[ -f "$HOME/git/" ]]
+if [[ -f "~/git/" ]]
 then
-    if [[ -f "$HOME/git/EITN30/.git" ]]
+    if [[ -f "~/git/EITN30/.git" ]]
     then
-        echo "Git repository exists, updating."
-        cd $HOME/git/$repofolder/
+        echo "Repo exists, updating."
+        cd ~/git/EITN30
         git pull
     else
-        echo "Git repository missing, cloning."
-        cd $HOME/git/
-        git clone $repository
+        echo "Repo missing, cloning."
+        cd ~/git/
+        git clone $repo
     fi
 else
-
     echo "Git directory missing. Creating and cloning repository."
-    mkdir $HOME/git/
-    cd $HOME/git/
-    git clone $repository
+    mkdir ~/git
+    cd ~/git
+    git clone $repo
 fi
