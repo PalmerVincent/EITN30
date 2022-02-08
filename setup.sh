@@ -42,9 +42,9 @@ then
     echo "Library exists"
 else
     cd ~/git/EITN30/
-    wget "https://github.com/nRF24/RF24/releases/download/v1.4.2/librf24-RPi_1.4.2-1_arm64.deb"
-    sudo dpkg -i librf24-RPi*arm64.deb
-    rm librf24-RPi*arm64.deb
+    wget "https://github.com/nRF24/RF24/releases/download/v1.4.2/librf24-RPi_1.4.2-1_armhf.deb"
+    sudo dpkg -i librf24-RPi*armhf.deb
+    rm librf24-RPi*armhf.deb
     echo "Library is installed"
 fi
 
@@ -53,7 +53,7 @@ echo $pass | sudo -S apt-get install python3-dev libboost-python-dev python3-pip
 python3 -m pip install --upgrade pip setuptools
 
 
-echo $pass | sudo -S ln -s $(ls /usr/lib/$(ls /usr/lib/gcc | tail -1)/libboost_python3*.so | tail -1) /usr/lib/$d /usr/lib/gcc | tail -1)/libboost_python3.so
+echo $pass | sudo -S ln -s $(ls /usr/lib/$(ls /usr/lib/gcc | tail -1)/libboost_python3*.so | tail -1) /usr/lib/$(ls /usr/lib/gcc | tail -1)/libboost_python3.so
 
 
 # Navigating for cloning repo, building wrapper
