@@ -8,7 +8,7 @@ git push
 
 cd ..
 
-sudo rm -rf ~/git
+sudo rm -rf ~/git ~/setup.sh
 
 echo "Done with clean, type exit to exit ssh connection!"
 
