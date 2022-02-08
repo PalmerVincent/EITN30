@@ -28,7 +28,7 @@ then
         git clone $repo
     fi
 else
-    echo "Git directory missing. Creating and cloning repository."
+    echo "Directory missing. Creating and cloning repo."
     mkdir ~/git
     cd ~/git
     git clone $repo
