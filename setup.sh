@@ -11,6 +11,7 @@ pass="LangGeNot5G"
 
 git config --global user.email "notmy@email.com"
 git config --global user.name "InternetInutiPi"
+git config pull.rebase false
 
 # Installing repo
 
