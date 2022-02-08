@@ -22,40 +22,43 @@ echo "Run 'sudo rm -r rf24libs' to clear the entire directory"
 echo ""
 echo ""
 
-echo "Prerequisite: GIT "
-echo -n "Do you want to install GIT using APT (Used to download source code) [y/N]? " 
-read answer
-case ${answer^^} in
-	Y ) sudo apt-get install git
-esac
+# echo "Prerequisite: GIT "
+# echo -n "Do you want to install GIT using APT (Used to download source code) [y/N]? " 
+# read answer
+# case ${answer^^} in
+# 	Y ) sudo apt-get install git
+# esac
+DORF24=1
+DORF24Network=0
+DORF24Mesh=0
+DORF24Gateway=0
+# echo $'\n'
+# echo -n "Do you want to install the RF24 core library, [y/N]? "
+# read answer
+# case ${answer^^} in
+#     Y ) DORF24=1;;
+# esac
 
-echo $'\n'
-echo -n "Do you want to install the RF24 core library, [y/N]? "
-read answer
-case ${answer^^} in
-    Y ) DORF24=1;;
-esac
+# echo $'\n'
+# echo -n "Do you want to install the RF24Network library [y/N]? "
+# read answer
+# case ${answer^^} in
+#     Y ) DORF24Network=1;;
+# esac
 
-echo $'\n'
-echo -n "Do you want to install the RF24Network library [y/N]? "
-read answer
-case ${answer^^} in
-    Y ) DORF24Network=1;;
-esac
+# echo $'\n'
+# echo -n "Do you want to install the RF24Mesh library [y/N]? "
+# read answer
+# case ${answer^^} in
+#     Y ) DORF24Mesh=1;;
+# esac
 
-echo $'\n'
-echo -n "Do you want to install the RF24Mesh library [y/N]? "
-read answer
-case ${answer^^} in
-    Y ) DORF24Mesh=1;;
-esac
-
-echo $'\n'
-echo -n "Do you want to install the RF24Gateway library [y/N]? "
-read answer
-case ${answer^^} in
-    Y ) DORF24Gateway=1;;
-esac
+# echo $'\n'
+# echo -n "Do you want to install the RF24Gateway library [y/N]? "
+# read answer
+# case ${answer^^} in
+#     Y ) DORF24Gateway=1;;
+# esac
 
 if [[ $DORF24Gateway > 0 ]]
 then
@@ -75,19 +78,21 @@ then
 	echo ""
 	git clone https://github.com/tmrh20/RF24.git ${ROOT_PATH}/RF24
 	echo ""
-    echo "*** Install RF24 core using? ***"
-    echo "1.BCM2835 Driver(Performance) 2.SPIDEV(Compatibility, Default)"
-    echo "3.WiringPi(Its WiringPi!) 4.MRAA(Intel Devices) 5.LittleWire"
-    read answer
-    cd ${ROOT_PATH}/RF24
-    case ${answer^^} in
-        1) ./configure --driver=RPi;;
-        2) ./configure --driver=SPIDEV;;
-        3) ./configure --driver=wiringPi;;
-        4) ./configure --driver=MRAA;;
-        5) ./configure --driver=LittleWire;;
-        *) ./configure --driver=SPIDEV;;
-    esac
+	cd ${ROOT_PATH}/RF24
+	./configure --driver=SPIDEV
+    # echo "*** Install RF24 core using? ***"
+    # echo "1.BCM2835 Driver(Performance) 2.SPIDEV(Compatibility, Default)"
+    # echo "3.WiringPi(Its WiringPi!) 4.MRAA(Intel Devices) 5.LittleWire"
+    # read answer
+    # cd ${ROOT_PATH}/RF24
+    # case ${answer^^} in
+    #     1) ./configure --driver=RPi;;
+    #     2) ./configure --driver=SPIDEV;;
+    #     3) ./configure --driver=wiringPi;;
+    #     4) ./configure --driver=MRAA;;
+    #     5) ./configure --driver=LittleWire;;
+    #     *) ./configure --driver=SPIDEV;;
+    # esac
     cd ../..    
     make -C ${ROOT_PATH}/RF24
 	sudo make install -C ${ROOT_PATH}/RF24
