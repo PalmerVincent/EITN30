@@ -11,7 +11,7 @@ pass="LangGeNot5G"
 
 git config --global user.email "notmy@email.com"
 git config --global user.name "InternetInutiPi"
-git config pull.rebase false
+git config --global pull.rebase false
 
 # Installing repo
 
@@ -35,6 +35,8 @@ else
     git clone $repo
 fi
 
+
+
 if [[ -f "/usr/include/RF24/" ]]
 then
     echo "Library exists"
@@ -57,8 +59,9 @@ python3 -m pip install --upgrade pip setuptools
 
 
 
-if [[ -e "/usr/lib/arm-linux-gnueabihf/libboost_python3.so"]]; then
-    sudo rm "/usr/lib/arm-linux-gnueabihf/libboost_python3.so"
+if [[ -e "/usr/lib/arm-linux-gnueabihf/libboost_python3.so"]] 
+then
+    sudo rm /usr/lib/arm-linux-gnueabihf/libboost_python3.so
 fi
 
 sudo ln -s $(ls /usr/lib/$(ls /usr/lib/gcc | tail -1)/libboost_python3*.so | tail -1) /usr/lib/$(ls /usr/lib/gcc | tail -1)/libboost_python3.so
