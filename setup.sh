@@ -12,13 +12,26 @@ pass="LangGeNot5G"
 git config --global user.email "notmy@email.com"
 git config --global user.name "InternetInutiPi"
 
+# Installing repo
 
-# Installing dependencies
-echo $pass | sudo -s apt-get update
-echo $pass | sudo -s apt-get upgrade 
+echo $repofolder
 
-echo $pass | sudo pip3 install Adafruit-Blinka
-echo $pass | sudo pip3 install circuitpython-nrf24l01
+if [[ -f "$HOME/git/" ]]
+then
+    if [[ -f "$HOME/git/EITN30/.git" ]]
+    then
+        echo "Git repository exists, updating."
+        cd $HOME/git/$repofolder/
+        git pull
+    else
+        echo "Git repository missing, cloning."
+        cd $HOME/git/
+        git clone $repository
+    fi
+else
 
-clear
-echo "Done with setup!"
+    echo "Git directory missing. Creating and cloning repository."
+    mkdir $HOME/git/
+    cd $HOME/git/
+    git clone $repository
+fi
