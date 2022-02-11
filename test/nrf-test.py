@@ -1,4 +1,4 @@
-from circuitpython_nrf24l01.rf24 import RF24
+from RF24 import RF24
 import board
 import busio
 import digitalio as dio
