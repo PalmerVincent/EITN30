@@ -43,7 +43,7 @@ then
 else
     cd ~/git/EITN30/
     # wget "http://tmrh20.github.io/RF24Installer/RPi/install.sh"
-    # chmod +x install.sh
+    chmod +x install.sh
     ./install.sh
     echo "Library is installed"
 fi
