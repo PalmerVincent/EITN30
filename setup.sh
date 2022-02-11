@@ -16,7 +16,7 @@ git config --global pull.rebase false
 # Installing repo
 
 
-if [[ -f "~/git/" ]]
+if [[ -d "~/git/" ]]
 then
     if [[ -f "~/git/EITN30/.git" ]]
     then
@@ -37,16 +37,14 @@ fi
 
 
 
-if [[ -f "/usr/include/RF24/" ]]
+if [[ -f "/usr/local/lib/librf24*" ]]
 then
-    echo "Library exists"
-else
-    cd ~/git/EITN30/
-    # wget "http://tmrh20.github.io/RF24Installer/RPi/install.sh"
-    chmod +x install.sh
-    ./install.sh
-    echo "Library is installed"
+    echo $pass | sudo -S rm -r /usr/local/lib/librf24*
 fi
+cd ~/git/EITN30/
+chmod +x install.sh
+./install.sh
+echo "Library is installed"
 
 
 
@@ -62,6 +60,7 @@ if [[ -e "/usr/lib/arm-linux-gnueabihf/libboost_python3.so" ]]
 then
     sudo rm /usr/lib/arm-linux-gnueabihf/libboost_python3.so
 fi
+
 
 
 sudo ln -s $(ls /usr/lib/$(ls /usr/lib/gcc | tail -1)/libboost_python3*.so | tail -1) /usr/lib/$(ls /usr/lib/gcc | tail -1)/libboost_python3.so
