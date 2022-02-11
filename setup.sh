@@ -53,17 +53,15 @@ fi
 # Installing dependancies
 
 echo $pass | sudo -S apt-get update
-echo $pass | sudo -S apt-get install -y  python3-dev libboost-python-dev python3-pip python3-rpi.gpio build-essential
+echo $pass | sudo -S apt-get install -y python3-dev libboost-python-dev python3-pip python3-rpi.gpio build-essential
 
 python3 -m pip install --upgrade pip setuptools
 
 
-# if [[ -e "/usr/lib/arm-linux-gnueabihf/libboost_python3.so" ]] 
-# then
-#    sudo rm /usr/lib/arm-linux-gnueabihf/libboost_python3.so
-#fi
-
-# rm libboost_python3.so
+if [[ -e "/usr/lib/arm-linux-gnueabihf/libboost_python3.so" ]] 
+then
+    sudo rm /usr/lib/arm-linux-gnueabihf/libboost_python3.so
+fi
 
 
 sudo ln -s $(ls /usr/lib/$(ls /usr/lib/gcc | tail -1)/libboost_python3*.so | tail -1) /usr/lib/$(ls /usr/lib/gcc | tail -1)/libboost_python3.so
