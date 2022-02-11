@@ -58,15 +58,15 @@ echo $pass | sudo -S apt-get install python3-dev libboost-python-dev python3-pip
 python3 -m pip install --upgrade pip setuptools
 
 
+# if [[ -e "/usr/lib/arm-linux-gnueabihf/libboost_python3.so" ]] 
+# then
+#    sudo rm /usr/lib/arm-linux-gnueabihf/libboost_python3.so
+#fi
 
-if [[ -e "/usr/lib/arm-linux-gnueabihf/libboost_python3.so" ]] 
-then
-    sudo rm /usr/lib/arm-linux-gnueabihf/libboost_python3.so
-fi
+# rm libboost_python3.so
+
 
 sudo ln -s $(ls /usr/lib/$(ls /usr/lib/gcc | tail -1)/libboost_python3*.so | tail -1) /usr/lib/$(ls /usr/lib/gcc | tail -1)/libboost_python3.so
-
-
 
 
 # Navigating for cloning repo, building wrapper
