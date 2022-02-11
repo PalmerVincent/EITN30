@@ -68,11 +68,7 @@ sudo ln -s $(ls /usr/lib/$(ls /usr/lib/gcc | tail -1)/libboost_python3*.so | tai
 
 # Navigating for cloning repo, building wrapper
 
-cd ~/git/EITN30/
-
-git clone https://github.com/nRF24/RF24.git
-
-cd RF24/pyRF24/
+cd ~/git/EITN30/rf24libs/RF24/pyRF24/
 
 python3 setup.py build
 
