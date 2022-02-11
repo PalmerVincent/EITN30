@@ -16,7 +16,7 @@ git config --global pull.rebase false
 # Installing repo
 
 
-if [[ -f "~/git/" ]]
+if [[ -d "~/git/" ]]
 then
     if [[ -f "~/git/EITN30/.git" ]]
     then
@@ -37,16 +37,14 @@ fi
 
 
 
-if [[ -f "/usr/include/RF24/" ]]
+if [[ -f "/usr/local/lib/librf24*" ]]
 then
-    echo "Library exists"
-else
-    cd ~/git/EITN30/
-    # wget "http://tmrh20.github.io/RF24Installer/RPi/install.sh"
-    chmod +x install.sh
-    ./install.sh
-    echo "Library is installed"
+    echo $pass | sudo -S rm -r /usr/local/lib/librf24*
 fi
+cd ~/git/EITN30/
+chmod +x install.sh
+./install.sh
+echo "Library is installed"
 
 
 
@@ -64,18 +62,12 @@ then
 fi
 
 
-
-
 sudo ln -s $(ls /usr/lib/$(ls /usr/lib/gcc | tail -1)/libboost_python3*.so | tail -1) /usr/lib/$(ls /usr/lib/gcc | tail -1)/libboost_python3.so
 
 
 # Navigating for cloning repo, building wrapper
 
-cd ~/git/EITN30/
-
-git clone https://github.com/nRF24/RF24.git
-
-cd RF24/pyRF24/
+cd ~/git/EITN30/rf24libs/RF24/pyRF24/
 
 python3 setup.py build
 
