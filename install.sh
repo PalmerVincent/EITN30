@@ -6,7 +6,7 @@ INSTALL_DIR="/rf24libs"
 ROOT_PATH=${INSTALL_PATH}
 ROOT_PATH+=${INSTALL_DIR}
 
-DORF24=0
+DORF24=1
 DORF24Network=0
 DORF24Mesh=0
 DORF24Gateway=0
@@ -28,10 +28,6 @@ echo ""
 # case ${answer^^} in
 # 	Y ) sudo apt-get install git
 # esac
-DORF24=1
-DORF24Network=0
-DORF24Mesh=0
-DORF24Gateway=0
 # echo $'\n'
 # echo -n "Do you want to install the RF24 core library, [y/N]? "
 # read answer
