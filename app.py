@@ -25,19 +25,46 @@ def setup():
     tx_radio.openWritingPipe(address[1])
     rx_radio.openReadingPipe(1, address[0])
     
+    tx_radio.enableDynamicPayloads()
+    rx_radio.enableDynamicPayloads()
+    
+    tx_radio.flush_tx()
+    rx_radio.flush_rx()
+    
     tx_radio.stopListening()
     rx_radio.startListening()
-
 
 
 def initialize():
     pass
 
 def rx():
-    pass
+    
+    payload = []
+    
+    while(True):
+        has_payload, pipe_number = rx_radio.available_pipe()
+        if(has_payload):
+            payload_size = rx_radio.getDynamicPayloadSize()
+            payload = rx_radio.read(payload_size)
+            print(payload)
+        
+   
+    
+        
+        
+        
 
 def tx():
-    pass
+    buffer = struct.pack(">s", "Hello")
+    
+    result = tx_radio.write(buffer)
+    
+    if (result):
+        print("Sent successfully")
+    else: 
+        print("Not successful")
+    
 
 def encrypt():
     pass
