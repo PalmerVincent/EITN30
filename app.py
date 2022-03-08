@@ -9,7 +9,7 @@ address =[b"base",b"node1"] # [Transmit address, Receive address]
 def setup():
 
     tx_radio = RF24(17, 0)
-    rx_radio = RF24(27, 60)
+    rx_radio = RF24(27, 10)
 
 
 
