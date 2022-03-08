@@ -10,8 +10,11 @@ global rx_radio
 address =[b"base",b"node1"] # [Transmit address, Receive address]
 
 def setup():
+
     tx_radio = RF24(17, 0)
     rx_radio = RF24(27, 10)
+
+
 
     if not (tx_radio.begin() and rx_radio.begin()):
         raise RuntimeError("radio hardware is not responding")
@@ -73,8 +76,13 @@ def decrypt():
     pass
 
 
-#def main():
-    
+def main():
+    role = input("select role 1 tx 2 rx")
+    setup()
+    if role == 1:
+      tx()
+    else:
+      rx()
 #    check = True
     
     
@@ -84,5 +92,5 @@ def decrypt():
         # Kolla receive 
         # Om tom skicka
 
-#if __name__ == "__main__":
-#    main()
+if __name__ == "__main__":
+    main()
