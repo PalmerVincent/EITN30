@@ -1,18 +1,15 @@
 import sys
 import argparse
-import time 
+import time
 import struct
 from RF24 import RF24, RF24_PA_LOW
-
-global tx_radio 
-global rx_radio
 
 address =[b"base",b"node1"] # [Transmit address, Receive address]
 
 def setup():
 
     tx_radio = RF24(17, 0)
-    rx_radio = RF24(27, 10)
+    rx_radio = RF24(27, 60)
 
 
 
@@ -27,47 +24,49 @@ def setup():
 
     tx_radio.openWritingPipe(address[1])
     rx_radio.openReadingPipe(1, address[0])
-    
+
     tx_radio.enableDynamicPayloads()
     rx_radio.enableDynamicPayloads()
-    
+
     tx_radio.flush_tx()
     rx_radio.flush_rx()
-    
+
     tx_radio.stopListening()
     rx_radio.startListening()
+
+    return tx_radio, rx_radio
 
 
 def initialize():
     pass
 
-def rx():
-    
+def rx(rx_radio):
+
     payload = []
-    
+
     while(True):
         has_payload, pipe_number = rx_radio.available_pipe()
         if(has_payload):
             payload_size = rx_radio.getDynamicPayloadSize()
             payload = rx_radio.read(payload_size)
             print(payload)
-        
-   
-    
-        
-        
-        
 
-def tx():
+
+
+
+
+
+
+def tx(tx_radio):
     buffer = struct.pack(">s", "Hello")
-    
+
     result = tx_radio.write(buffer)
-    
+
     if (result):
         print("Sent successfully")
-    else: 
+    else:
         print("Not successful")
-    
+
 
 def encrypt():
     pass
@@ -78,18 +77,16 @@ def decrypt():
 
 def main():
     role = input("select role 1 tx 2 rx")
-    setup()
+    tx_radio, rx_radio = setup()
     if role == 1:
-      tx()
+      tx(tx_radio)
     else:
-      rx()
+      rx(rx_radio)
 #    check = True
-    
-    
 #    while check:
 #        pass
-        # Kolla om transmit 
-        # Kolla receive 
+        # Kolla om transmit
+        # Kolla receive
         # Om tom skicka
 
 if __name__ == "__main__":
