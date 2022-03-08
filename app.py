@@ -9,7 +9,7 @@ address =[b"base",b"node1"] # [Transmit address, Receive address]
 def setup():
 
     tx_radio = RF24(17, 0)
-    rx_radio = RF24(27, 10)
+    rx_radio = RF24(27, 60)
 
 
 
@@ -78,6 +78,7 @@ def decrypt():
 def main():
     role = input("select role 1 tx 2 rx")
     tx_radio, rx_radio = setup()
+    print(f"TX: {tx_radio}, RX: {rx_radio}")
     if role == 1:
       tx(tx_radio)
     else:
