@@ -9,12 +9,13 @@ address =[b"base",b"node1"] # [Transmit address, Receive address]
 def setup():
 
     tx_radio = RF24(17, 0)
-    rx_radio = RF24(27, 60)
+    rx_radio = RF24(27, 10)
 
+    if not tx_radio.begin():
+        raise RuntimeError("tx_radio hardware is not responding")
 
-
-    if not (tx_radio.begin() and rx_radio.begin()):
-        raise RuntimeError("radio hardware is not responding")
+    if not rx_radio.begin():
+        raise RuntimeError("rx_radio hardware is not responding")
 
     tx_radio.setPALevel(RF24_PA_LOW)
     rx_radio.setPALevel(RF24_PA_LOW)
