@@ -20,21 +20,23 @@ if [[ -d "~/git/" ]]
 then
     if [[ -f "~/git/EITN30/.git" ]]
     then
-        echo "Repo exists, updating."
+        echo "Repo exists, updating.\n"
         cd ~/git/EITN30
         git pull
     else
-        echo "Repo missing, cloning."
+        echo "Repo missing, cloning.\n"
         cd ~/git/
         git clone $repo
     fi
 else
-    echo "Directory missing. Creating and cloning repo."
+    echo "Directory missing. Creating and cloning repo.\n"
     mkdir ~/git
     cd ~/git
     git clone $repo
 fi
 
+echo "Configring nano\n\n"
+cp ~/git/EITN30/.nanorc ~/.nanorc
 
 
 if [[ -f "/usr/local/lib/librf24*" ]]
@@ -44,7 +46,7 @@ fi
 cd ~/git/EITN30/
 chmod +x install.sh
 ./install.sh
-echo "Library is installed"
+echo "Library is installed\n\n"
 
 
 
@@ -71,7 +73,7 @@ cd ~/git/EITN30/rf24libs/RF24/pyRF24/
 
 python3 setup.py build
 
-echo "Build complete"
+echo "Build complete\n\n"
 
 sudo python3 setup.py install
 
