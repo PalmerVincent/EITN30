@@ -2,3 +2,4 @@ set tabsize 4
 set autoindent
 set linenumbers
 set tabstospaces
+set zap
