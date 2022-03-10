@@ -77,7 +77,7 @@ def rx():
 
             print(
                 "Received {} bytes on pipe {}: {}".format(
-                    rx_radio.payloadSize,
+                    len(buffer),
                     pipe_number,
                     payload[-1]
                 )
@@ -86,7 +86,7 @@ def rx():
 
 def tx():
     tx_radio.stopListening()
-    message = b'hello'
+    message = b'hi'
     pSize = len(message)
     fString = ">"+str(pSize)+"s"
     buffer = struct.pack(fString, message)
