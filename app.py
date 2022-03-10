@@ -76,7 +76,7 @@ def rx():
 
             print(
                 "Received {} bytes on pipe {}: {}".format(
-                    rx_radio.payloadSize,
+                    len(buffer),
                     pipe_number,
                     payload[-1]
                 )
