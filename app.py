@@ -128,14 +128,20 @@ def base():
 def node():
     pass
 
-
-def encrypt():
+def createFrame():
     pass
 
-
-def decrypt():
+def fragment():
     pass
 
+#
+#def encrypt():
+#    pass
+
+
+#def decrypt():
+#    pass
+#
 
 def main():
     role = int(
