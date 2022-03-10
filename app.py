@@ -4,9 +4,8 @@ import time
 import struct
 from RF24 import RF24, RF24_PA_LOW
 
-address =[b"base",b"node1"] # [Transmit address, Receive address]
-
 def setup():
+    address =[b"tnode",b"rnode"] # [Transmit address, Receive address]
 
     tx_radio = RF24(17, 0)
     rx_radio = RF24(27, 60)
@@ -49,24 +48,29 @@ def rx(rx_radio):
         has_payload, pipe_number = rx_radio.available_pipe()
         if(has_payload):
             payload_size = rx_radio.getDynamicPayloadSize()
-            payload = rx_radio.read(payload_size)
-            print(payload)
+            buffer = rx_radio.read(payload_size)
+            payload.append(struct.unpack(">s", buffer)[0])
 
-
-
-
+            print(
+                "Received {} bytes on pipe {}: {}".format(
+                     radio.payloadSize,
+                     pipe_number,
+                     payload[-1]
+                )
+            )
 
 
 
 def tx(tx_radio):
-    buffer = struct.pack(">s", "Hello")
+    while(True):
+        buffer = struct.pack(">s", "Hello")
 
-    result = tx_radio.write(buffer)
+        result = tx_radio.write(buffer)
 
-    if (result):
-        print("Sent successfully")
-    else:
-        print("Not successful")
+        if (result):
+            print("Sent successfully")
+        else:
+            print("Not successful")
 
 
 def encrypt():
