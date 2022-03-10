@@ -32,8 +32,7 @@ def setup(role):
 
     tx_radio.enableDynamicPayloads()
     rx_radio.enableDynamicPayloads()
-    # tx_radio.payloadSize = len(struct.pack(">f", 1.0))
-    # rx_radio.payloadSize = len(struct.pack(">f", 1.0))
+    
     tx_radio.flush_tx()
     rx_radio.flush_rx()
 
@@ -54,9 +53,12 @@ def rx(rx_radio):
     while(True):
         has_payload, pipe_number = rx_radio.available_pipe()
         if(has_payload):
-            print(rx_radio.getDynamicPayloadSize())
-            buffer = rx_radio.read(32)
-            payload.append(struct.unpack(">s", buffer))
+            pSize = rx_radio.getDynamicPayloadSize()
+            print(pSize)
+            buffer = rx_radio.read(pSize)
+            print(buffer)
+            fString = ">" + str(len(pSize)) + "s"
+            payload.append(struct.unpack(fString, buffer)[0])
 
             print(
                 "Received {} bytes on pipe {}: {}".format(
@@ -69,8 +71,13 @@ def rx(rx_radio):
 
 def tx(tx_radio):
     tx_radio.stopListening()
+    message = b'hello'
+    pSize = len(message)
+    fString =">"+str(pSize)+"s"
+    buffer = struct.pack(fString, message)
+     
     while(True):
-        buffer = struct.pack(">s", b"hello")
+        buffer = struct.pack(fstring, b"hello")
 
         result = tx_radio.write(buffer)
 
