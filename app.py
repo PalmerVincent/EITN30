@@ -54,7 +54,7 @@ def rx(rx_radio):
     while(True):
         has_payload, pipe_number = rx_radio.available_pipe()
         if(has_payload):
-            buffer = rx_radio.read(rx_radio.payloadSize)
+            buffer = rx_radio.read(rx_radio.getDynamicPayloadSize())
             payload.append(struct.unpack(">s", buffer)[0])
 
             print(
