@@ -28,9 +28,8 @@ def setup():
 
     # tx_radio.enableDynamicPayloads()
     # rx_radio.enableDynamicPayloads()
-    tx_radio.payloadSize = len(struct.pack(">f", 1.0)
-    rx_radio.payloadSize=len(struct.pack(">f", 1.0)
-
+    tx_radio.payloadSize = len(struct.pack(">f", 1.0))
+    rx_radio.payloadSize = len(struct.pack(">f", 1.0))
     tx_radio.flush_tx()
     rx_radio.flush_rx()
 
@@ -43,31 +42,31 @@ def setup():
 def initialize():
     pass
 
+
 def rx(rx_radio):
 
-    payload=[]
+    payload = []
 
     while(True):
-        has_payload, pipe_number=rx_radio.available_pipe()
+        has_payload, pipe_number = rx_radio.available_pipe()
         if(has_payload):
-            buffer=rx_radio.read(rx_radio.payloadSize)
+            buffer = rx_radio.read(rx_radio.payloadSize)
             payload.append(struct.unpack(">f", buffer)[0])
 
             print(
                 "Received {} bytes on pipe {}: {}".format(
-                     radio.payloadSize,
-                     pipe_number,
-                     payload[-1]
+                    radio.payloadSize,
+                    pipe_number,
+                    payload[-1]
                 )
             )
 
 
-
 def tx(tx_radio):
     while(True):
-        buffer=struct.pack(">f", 1.0)
+        buffer = struct.pack(">f", 1.0)
 
-        result=tx_radio.write(buffer)
+        result = tx_radio.write(buffer)
 
         if (result):
             print("Sent successfully")
@@ -78,24 +77,26 @@ def tx(tx_radio):
 def encrypt():
     pass
 
+
 def decrypt():
     pass
 
 
 def main():
-    role=input("select role 1 tx 2 rx")
-    tx_radio, rx_radio=setup()
+    role = input("select role 1 tx 2 rx")
+    tx_radio, rx_radio = setup()
     print(f"TX: {tx_radio}, RX: {rx_radio}")
     if role == 1:
-      tx(tx_radio)
+        tx(tx_radio)
     else:
-      rx(rx_radio)
+        rx(rx_radio)
 #    check = True
 #    while check:
 #        pass
         # Kolla om transmit
         # Kolla receive
         # Om tom skicka
+
 
 if __name__ == "__main__":
     main()
