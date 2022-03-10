@@ -55,7 +55,7 @@ def rx(rx_radio):
         has_payload, pipe_number = rx_radio.available_pipe()
         if(has_payload):
             buffer = rx_radio.read(rx_radio.getDynamicPayloadSize())
-            payload.append(struct.unpack(">s", buffer)[0])
+            payload.append(struct.unpack(">s", buffer))
 
             print(
                 "Received {} bytes on pipe {}: {}".format(
