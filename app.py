@@ -33,8 +33,8 @@ def setup():
     tx_radio.flush_tx()
     rx_radio.flush_rx()
 
-    tx_radio.stopListening()
-    rx_radio.startListening()
+    
+    
 
     return tx_radio, rx_radio
 
@@ -44,7 +44,7 @@ def initialize():
 
 
 def rx(rx_radio):
-
+    rx_radio.startListening()
     payload = []
 
     while(True):
@@ -63,6 +63,7 @@ def rx(rx_radio):
 
 
 def tx(tx_radio):
+    tx_radio.stopListening()
     while(True):
         buffer = struct.pack(">f", 1.0)
 
