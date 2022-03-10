@@ -4,11 +4,13 @@ import time
 import struct
 from RF24 import RF24, RF24_PA_LOW
 
+
 payload = [1.0]
 
 def setup(role):
-    address = [b"tnode", b"rnode"]  # [Transmit address, Receive address]
-
+    # [base tx_radio, base rx_radio, node tx_radio, node rx_radio]
+    addr = [[b"baseT", b"baseR"], [b"nodeT", b"nodeR"]]
+    
     tx_radio = RF24(17, 0)
     rx_radio = RF24(27, 60)
 
@@ -24,8 +26,8 @@ def setup(role):
     # tx_radio.setAutoAck(False)
     # rx_radio.setAutoAck(False)
 
-    tx_radio.openWritingPipe(address[role])
-    rx_radio.openReadingPipe(1, address[not role])
+    tx_radio.openWritingPipe(addr[role][1])
+    rx_radio.openReadingPipe(1, addr[not role][0])
 
     # tx_radio.enableDynamicPayloads()
     # rx_radio.enableDynamicPayloads()
@@ -86,7 +88,8 @@ def decrypt():
 
 
 def main():
-    role = int(input("select role 1 tx 2 rx"))-1
+    role = int(input("Select role of machine. Enter '0' for base and 1 for node: ")) or 1
+
     tx_radio, rx_radio = setup(role)
     print(f"TX: {tx_radio}, RX: {rx_radio}")
     if not role:
