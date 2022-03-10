@@ -1,4 +1,5 @@
 import sys
+import threading
 import argparse
 import time
 import struct
@@ -8,10 +9,10 @@ tx_radio = RF24(17, 0)
 rx_radio = RF24(27, 60)
 payload = []
 
+
 def setup(role):
-    
-    addr = [b"base",b"node"]
-    
+    addr = [b"base", b"node"]
+
     if not tx_radio.begin():
         tx_radio.printPrettyDetails()
         raise RuntimeError("tx_radio hardware is not responding")
@@ -31,18 +32,17 @@ def setup(role):
 
     tx_radio.enableDynamicPayloads()
     rx_radio.enableDynamicPayloads()
-    
+
     tx_radio.flush_tx()
     rx_radio.flush_rx()
 
-    
+
 def initialize():
     pass
 
 
-def rx(rx_radio):
+def rx():
     rx_radio.startListening()
-    
 
     while(True):
         has_payload, pipe_number = rx_radio.available_pipe()
@@ -63,13 +63,13 @@ def rx(rx_radio):
             )
 
 
-def tx(tx_radio):
+def tx():
     tx_radio.stopListening()
     message = b'hello'
     pSize = len(message)
-    fString =">"+str(pSize)+"s"
+    fString = ">"+str(pSize)+"s"
     buffer = struct.pack(fString, message)
-     
+
     while(True):
         buffer = struct.pack(fString, b"hello")
 
@@ -82,6 +82,15 @@ def tx(tx_radio):
         time.sleep(1)
 
 
+def base():
+    
+    pass
+
+
+def node():
+    pass
+
+
 def encrypt():
     pass
 
@@ -91,14 +100,14 @@ def decrypt():
 
 
 def main():
-    role = int(input("Select role of machine. Enter '0' for base and 1 for node: "))
-    print("selected role: ", role, "NOT role: ", not role)
-    tx_radio, rx_radio = setup(role)
-    print(f"TX: {tx_radio}, RX: {rx_radio}")
+    role = int(
+        input("Select role of machine. Enter '0' for base and 1 for node: "))
+    setup(role)
+
     if not role:
-        tx(tx_radio)
+        base()
     else:
-        rx(rx_radio)
+        node()
 #    check = True
 #    while check:
 #        pass
