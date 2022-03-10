@@ -27,23 +27,23 @@ def setup(role):
 
     tx_radio.setPALevel(RF24_PA_LOW)
     rx_radio.setPALevel(RF24_PA_LOW)
-    
+
     if role == 1:
         # Node
-        nodeTun = TunTap(nic_type="Tun",nic_name="longge")
+        nodeTun = TunTap(nic_type="Tun", nic_name="longge")
         nodeTun.config(ip="192.168.1.2", mask="255.255.255.0")
         IPv4 = {
-            "VERSION": b"0100", 
-            
-            
+            "VERSION": b"0100",
+
+
         }
-    
+
     if role == 0:
         # Base
-        baseTun = TunTap(nic_type="Tun",nic_name="longge")
+        baseTun = TunTap(nic_type="Tun", nic_name="longge")
         baseTun.config(ip="192.168.1.1", mask="255.255.255.0")
         IPv4 = {
-            
+
         }
 
     # tx_radio.setAutoAck(False)
@@ -70,9 +70,7 @@ def rx():
         has_payload, pipe_number = rx_radio.available_pipe()
         if(has_payload):
             pSize = rx_radio.getDynamicPayloadSize()
-            print(pSize)
             buffer = rx_radio.read(pSize)
-            print(buffer)
             fString = ">" + str(pSize) + "s"
             payload.append(struct.unpack(fString, buffer)[0])
 
@@ -93,7 +91,7 @@ def tx():
     buffer = struct.pack(fString, message)
 
     while(True):
-
+        result = tx_radio.write(buffer)
         if (result):
             print("Sent successfully")
         else:
@@ -123,9 +121,9 @@ def main():
     setup(role)
 
     if not role:
-        base()
+        tx()
     else:
-        node()
+        rx()
 #    check = True
 #    while check:
 #        pass
