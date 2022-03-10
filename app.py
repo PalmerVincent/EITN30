@@ -9,7 +9,8 @@ payload = [1.0]
 
 def setup(role):
     # [base tx_radio, base rx_radio, node tx_radio, node rx_radio]
-    addr = [[b"baseT", b"baseR"], [b"nodeT", b"nodeR"]]
+
+    addr = [b"base",b"node"]
     
     tx_radio = RF24(17, 0)
     rx_radio = RF24(27, 60)
@@ -26,8 +27,8 @@ def setup(role):
     # tx_radio.setAutoAck(False)
     # rx_radio.setAutoAck(False)
 
-    tx_radio.openWritingPipe(addr[role][1])
-    rx_radio.openReadingPipe(1, addr[not role][0])
+    tx_radio.openWritingPipe(addr[not role])
+    rx_radio.openReadingPipe(1, addr[role])
 
     # tx_radio.enableDynamicPayloads()
     # rx_radio.enableDynamicPayloads()
