@@ -6,6 +6,7 @@ import time
 import struct
 
 from importlib_metadata import version
+from tuntap import TunTap
 from RF24 import RF24, RF24_PA_LOW
 
 tx_radio = RF24(17, 0)
@@ -65,10 +66,6 @@ def rx():
     while(True):
         has_payload, pipe_number = rx_radio.available_pipe()
         if(has_payload):
-            payload_size = rx_radio.getDynamicPayloadSize()
-            payload = rx_radio.read(payload_size)
-            print(payload)
-    
             pSize = rx_radio.getDynamicPayloadSize()
             print(pSize)
             buffer = rx_radio.read(pSize)
@@ -102,7 +99,6 @@ def tx():
 
 
 def base():
-    
     pass
 
 

@@ -83,7 +83,7 @@ echo ""
 echo $pass | sudo -S apt-get update
 echo $pass | sudo -S apt-get install -y python3-dev libboost-python-dev python3-pip python3-rpi.gpio build-essential
 
-python3 -m pip install --upgrade pip setuptools autopep8
+python3 -m pip install --upgrade pip setuptools autopep8 python-pytuntap
 
 
 if [[ -e "/usr/lib/arm-linux-gnueabihf/libboost_python3.so" ]] 
