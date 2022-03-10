@@ -32,18 +32,40 @@ def setup(role):
         # Node
         nodeTun = TunTap(nic_type="Tun", nic_name="longge")
         nodeTun.config(ip="192.168.1.2", mask="255.255.255.0")
-        IPv4 = {
-            "VERSION": b"0100",
-
-
+        header = {
+            "VERSION": "0b0100", 
+            "IHL": "0b0101",
+            "DSCP": "0b000000",
+            "ECN": "0b00",
+            "TotLen": "0x003c",
+            "Identification": "0x2c2d",
+            "Flags": "0b000",
+            "FragmentOffset": "0b0000000000000",
+            "TTL": "0x80",
+            "Protocol": "0x01",
+            "Checksum": "0x0000",
+            "Source": "0xc0a80102",
+            "Destination": "0xc0a80101"
         }
 
     if role == 0:
         # Base
         baseTun = TunTap(nic_type="Tun", nic_name="longge")
         baseTun.config(ip="192.168.1.1", mask="255.255.255.0")
-        IPv4 = {
-
+        header = {
+            "VERSION": "0b0100", 
+            "IHL": "0b0101",
+            "DSCP": "0b000000",
+            "ECN": "0b00",
+            "TotLen": "0x003c",
+            "Identification": "0x2c2d",
+            "Flags": "0b000", # 0b001 when excpecting more fragments
+            "FragmentOffset": "0b0000000000000", # Used when fragmenting
+            "TTL": "0x80",
+            "Protocol": "0x01",
+            "Checksum": "0x0000",
+            "Source": "0xc0a80101",
+            "Destination": "0xc0a80102"
         }
 
     # tx_radio.setAutoAck(False)
@@ -60,7 +82,7 @@ def setup(role):
 
 
 def initialize():
-    pass
+    pass 
 
 
 def rx():
