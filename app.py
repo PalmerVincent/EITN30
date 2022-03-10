@@ -89,7 +89,7 @@ def decrypt():
 
 
 def main():
-    role = int(input("Select role of machine. Enter '0' for base and 1 for node: ")) or 1
+    role = int(input("Select role of machine. Enter '0' for base and 1 for node: "))
     print("selected role: ", role, "NOT role: ", not role)
     tx_radio, rx_radio = setup(role)
     print(f"TX: {tx_radio}, RX: {rx_radio}")
