@@ -1,7 +1,10 @@
+from distutils.version import Version
 import sys
 import argparse
 import time
 import struct
+
+from importlib_metadata import version
 from RF24 import RF24, RF24_PA_LOW
 
 tx_radio = RF24(17, 0)
@@ -22,6 +25,21 @@ def setup(role):
 
     tx_radio.setPALevel(RF24_PA_LOW)
     rx_radio.setPALevel(RF24_PA_LOW)
+    
+    if role == 1:
+        # Node
+
+        IPv4 = {
+            "VERSION": b"0100", 
+            
+            
+        }
+    
+    if role == 0:
+        # Base
+        IPv4 = {
+            
+        }
 
     # tx_radio.setAutoAck(False)
     # rx_radio.setAutoAck(False)
@@ -47,6 +65,10 @@ def rx(rx_radio):
     while(True):
         has_payload, pipe_number = rx_radio.available_pipe()
         if(has_payload):
+            payload_size = rx_radio.getDynamicPayloadSize()
+            payload = rx_radio.read(payload_size)
+            print(payload)
+    
             pSize = rx_radio.getDynamicPayloadSize()
             print(pSize)
             buffer = rx_radio.read(pSize)
@@ -71,9 +93,6 @@ def tx(tx_radio):
     buffer = struct.pack(fString, message)
      
     while(True):
-        buffer = struct.pack(fString, b"hello")
-
-        result = tx_radio.write(buffer)
 
         if (result):
             print("Sent successfully")
