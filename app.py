@@ -49,7 +49,7 @@ def rx(rx_radio):
         if(has_payload):
             payload_size = rx_radio.getDynamicPayloadSize()
             buffer = rx_radio.read(payload_size)
-            payload.append(struct.unpack(">s", buffer)[0])
+            payload.append(struct.unpack(">f", buffer)[0])
 
             print(
                 "Received {} bytes on pipe {}: {}".format(
@@ -63,7 +63,7 @@ def rx(rx_radio):
 
 def tx(tx_radio):
     while(True):
-        buffer = struct.pack(">s", "Hello")
+        buffer = struct.pack(">f", 1)
 
         result = tx_radio.write(buffer)
 
