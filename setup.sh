@@ -7,7 +7,7 @@
 repo="git@github.com:PalmerVincent/EITN30.git"
 pass="LangGeNot5G"
 
-# Configure git 
+# Configure git
 
 git config --global user.email "notmy@email.com"
 git config --global user.name "InternetInutiPi"
@@ -15,27 +15,31 @@ git config --global pull.rebase false
 
 # Installing repo
 
-
 if [[ -d "~/git/" ]]
 then
-    if [[ -f "~/git/EITN30/.git" ]]
+    if [[ -d "~/git/EITN30/.git" ]]
     then
-        echo "Repo exists, updating.\n"
+        echo "Repo exists, updating."
+        echo ""
         cd ~/git/EITN30
         git pull
     else
-        echo "Repo missing, cloning.\n"
+        echo "Repo missing, cloning."
+        echo ""
         cd ~/git/
         git clone $repo
     fi
 else
-    echo "Directory missing. Creating and cloning repo.\n"
+    echo "Directory missing. Creating and cloning repo."
+    echo ""
     mkdir ~/git
     cd ~/git
     git clone $repo
 fi
 
-echo "Configring nano\n\n"
+echo "Configring nano"
+echo ""
+echo ""
 cp ~/git/EITN30/.nanorc ~/.nanorc
 
 
@@ -43,10 +47,34 @@ if [[ -f "/usr/local/lib/librf24*" ]]
 then
     echo $pass | sudo -S rm -r /usr/local/lib/librf24*
 fi
+
+if [[ -d "/usr/local/include/RF24/" ]]
+then
+    sudo rm -r /usr/local/include/RF24*
+fi
+
+
+
 cd ~/git/EITN30/
-chmod +x install.sh
-./install.sh
-echo "Library is installed\n\n"
+
+
+#chmod +x install.sh
+#./install.sh
+
+echo ""
+echo "Installing RF24 Repo..."
+echo ""
+git clone https://github.com/tmrh20/RF24.git
+echo ""
+cd RF24
+./configure --driver=SPIDEV
+cd ..
+make -C ./RF24
+sudo make install -C ./RF24
+
+echo "Library is installed"
+echo ""
+echo ""
 
 
 
@@ -69,14 +97,14 @@ sudo ln -s $(ls /usr/lib/$(ls /usr/lib/gcc | tail -1)/libboost_python3*.so | tai
 
 # Navigating for cloning repo, building wrapper
 
-cd ~/git/EITN30/rf24libs/RF24/pyRF24/
+cd ~/git/EITN30/RF24/pyRF24/
 
 python3 setup.py build
 
-echo "Build complete\n\n"
+echo "Build complete"
+echo ""
+echo ""
 
 sudo python3 setup.py install
 
 echo "Install complete"
-
-
