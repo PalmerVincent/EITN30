@@ -85,7 +85,7 @@ def rx():
 
 def tx():
     tx_radio.stopListening()
-    message = b'hello'
+    message = b'hi'
     pSize = len(message)
     fString = ">"+str(pSize)+"s"
     buffer = struct.pack(fString, message)
