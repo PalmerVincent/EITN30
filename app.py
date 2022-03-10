@@ -30,7 +30,8 @@ def setup(role):
     
     if role == 1:
         # Node
-
+        nodeTun = TunTap(nic_type="Tun",nic_name="longge")
+        nodeTun.config(ip="192.168.1.2", mask="255.255.255.0")
         IPv4 = {
             "VERSION": b"0100", 
             
@@ -39,6 +40,8 @@ def setup(role):
     
     if role == 0:
         # Base
+        baseTun = TunTap(nic_type="Tun",nic_name="longge")
+        baseTun.config(ip="192.168.1.1", mask="255.255.255.0")
         IPv4 = {
             
         }
