@@ -4,8 +4,9 @@ import time
 import struct
 from RF24 import RF24, RF24_PA_LOW
 
+
 def setup():
-    address =[b"tnode",b"rnode"] # [Transmit address, Receive address]
+    address = [b"tnode", b"rnode"]  # [Transmit address, Receive address]
 
     tx_radio = RF24(17, 0)
     rx_radio = RF24(27, 60)
@@ -19,14 +20,16 @@ def setup():
     tx_radio.setPALevel(RF24_PA_LOW)
     rx_radio.setPALevel(RF24_PA_LOW)
 
-    #tx_radio.setAutoAck(False)
-    #rx_radio.setAutoAck(False)
+    # tx_radio.setAutoAck(False)
+    # rx_radio.setAutoAck(False)
 
     tx_radio.openWritingPipe(address[1])
     rx_radio.openReadingPipe(1, address[0])
 
-    tx_radio.enableDynamicPayloads()
-    rx_radio.enableDynamicPayloads()
+    # tx_radio.enableDynamicPayloads()
+    # rx_radio.enableDynamicPayloads()
+    tx_radio.payloadSize = len(struct.pack(">f", 1.0)
+    rx_radio.payloadSize=len(struct.pack(">f", 1.0)
 
     tx_radio.flush_tx()
     rx_radio.flush_rx()
@@ -42,13 +45,12 @@ def initialize():
 
 def rx(rx_radio):
 
-    payload = []
+    payload=[]
 
     while(True):
-        has_payload, pipe_number = rx_radio.available_pipe()
+        has_payload, pipe_number=rx_radio.available_pipe()
         if(has_payload):
-            payload_size = rx_radio.getDynamicPayloadSize()
-            buffer = rx_radio.read(payload_size)
+            buffer=rx_radio.read(rx_radio.payloadSize)
             payload.append(struct.unpack(">f", buffer)[0])
 
             print(
@@ -63,9 +65,9 @@ def rx(rx_radio):
 
 def tx(tx_radio):
     while(True):
-        buffer = struct.pack(">f", 1)
+        buffer=struct.pack(">f", 1.0)
 
-        result = tx_radio.write(buffer)
+        result=tx_radio.write(buffer)
 
         if (result):
             print("Sent successfully")
@@ -81,8 +83,8 @@ def decrypt():
 
 
 def main():
-    role = input("select role 1 tx 2 rx")
-    tx_radio, rx_radio = setup()
+    role=input("select role 1 tx 2 rx")
+    tx_radio, rx_radio=setup()
     print(f"TX: {tx_radio}, RX: {rx_radio}")
     if role == 1:
       tx(tx_radio)
