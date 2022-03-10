@@ -4,6 +4,7 @@ import time
 import struct
 from RF24 import RF24, RF24_PA_LOW
 
+payload = [1.0]
 
 def setup():
     address = [b"tnode", b"rnode"]  # [Transmit address, Receive address]
@@ -23,8 +24,8 @@ def setup():
     # tx_radio.setAutoAck(False)
     # rx_radio.setAutoAck(False)
 
-    tx_radio.openWritingPipe(address[1])
-    rx_radio.openReadingPipe(1, address[0])
+    tx_radio.openWritingPipe(address[role])
+    rx_radio.openReadingPipe(1, address[not role])
 
     # tx_radio.enableDynamicPayloads()
     # rx_radio.enableDynamicPayloads()
@@ -45,7 +46,7 @@ def initialize():
 
 def rx(rx_radio):
     rx_radio.startListening()
-    payload = []
+    
 
     while(True):
         has_payload, pipe_number = rx_radio.available_pipe()
@@ -73,6 +74,7 @@ def tx(tx_radio):
             print("Sent successfully")
         else:
             print("Not successful")
+        time.sleep(1)
 
 
 def encrypt():
@@ -85,7 +87,7 @@ def decrypt():
 
 def main():
     role = input("select role 1 tx 2 rx")
-    tx_radio, rx_radio = setup()
+    tx_radio, rx_radio = setup(role)
     print(f"TX: {tx_radio}, RX: {rx_radio}")
     if role == 1:
         tx(tx_radio)
