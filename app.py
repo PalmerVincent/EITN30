@@ -4,21 +4,20 @@ import time
 import struct
 from RF24 import RF24, RF24_PA_LOW
 
-
+tx_radio = RF24(17, 0)
+rx_radio = RF24(27, 60)
 payload = []
 
 def setup(role):
-    # [base tx_radio, base rx_radio, node tx_radio, node rx_radio]
-
+    
     addr = [b"base",b"node"]
     
-    tx_radio = RF24(17, 0)
-    rx_radio = RF24(27, 60)
-
     if not tx_radio.begin():
+        tx_radio.printPrettyDetails()
         raise RuntimeError("tx_radio hardware is not responding")
 
     if not rx_radio.begin():
+        rx_radio.printPrettyDetails()
         raise RuntimeError("rx_radio hardware is not responding")
 
     tx_radio.setPALevel(RF24_PA_LOW)
@@ -27,8 +26,8 @@ def setup(role):
     # tx_radio.setAutoAck(False)
     # rx_radio.setAutoAck(False)
 
-    tx_radio.openWritingPipe(addr[not role])
-    rx_radio.openReadingPipe(1, addr[role])
+    tx_radio.openWritingPipe(addr[role])
+    rx_radio.openReadingPipe(1, addr[not role])
 
     tx_radio.enableDynamicPayloads()
     rx_radio.enableDynamicPayloads()
@@ -37,11 +36,6 @@ def setup(role):
     rx_radio.flush_rx()
 
     
-    
-
-    return tx_radio, rx_radio
-
-
 def initialize():
     pass
 
@@ -57,7 +51,7 @@ def rx(rx_radio):
             print(pSize)
             buffer = rx_radio.read(pSize)
             print(buffer)
-            fString = ">" + str(len(pSize)) + "s"
+            fString = ">" + str(pSize) + "s"
             payload.append(struct.unpack(fString, buffer)[0])
 
             print(
@@ -77,7 +71,7 @@ def tx(tx_radio):
     buffer = struct.pack(fString, message)
      
     while(True):
-        buffer = struct.pack(fstring, b"hello")
+        buffer = struct.pack(fString, b"hello")
 
         result = tx_radio.write(buffer)
 
