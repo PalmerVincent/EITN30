@@ -6,7 +6,7 @@ from RF24 import RF24, RF24_PA_LOW
 
 payload = [1.0]
 
-def setup():
+def setup(role):
     address = [b"tnode", b"rnode"]  # [Transmit address, Receive address]
 
     tx_radio = RF24(17, 0)
