@@ -69,7 +69,7 @@ def rx(rx_radio):
 def tx(tx_radio):
     tx_radio.stopListening()
     while(True):
-        buffer = struct.pack(">s", "hello")
+        buffer = struct.pack(">s", b"hello")
 
         result = tx_radio.write(buffer)
 
