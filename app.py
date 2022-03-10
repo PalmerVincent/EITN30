@@ -5,7 +5,7 @@ import struct
 from RF24 import RF24, RF24_PA_LOW
 
 
-payload = [1.0]
+payload = []
 
 def setup(role):
     # [base tx_radio, base rx_radio, node tx_radio, node rx_radio]
@@ -30,10 +30,10 @@ def setup(role):
     tx_radio.openWritingPipe(addr[not role])
     rx_radio.openReadingPipe(1, addr[role])
 
-    # tx_radio.enableDynamicPayloads()
-    # rx_radio.enableDynamicPayloads()
-    tx_radio.payloadSize = len(struct.pack(">f", 1.0))
-    rx_radio.payloadSize = len(struct.pack(">f", 1.0))
+    tx_radio.enableDynamicPayloads()
+    rx_radio.enableDynamicPayloads()
+    # tx_radio.payloadSize = len(struct.pack(">f", 1.0))
+    # rx_radio.payloadSize = len(struct.pack(">f", 1.0))
     tx_radio.flush_tx()
     rx_radio.flush_rx()
 
@@ -55,7 +55,7 @@ def rx(rx_radio):
         has_payload, pipe_number = rx_radio.available_pipe()
         if(has_payload):
             buffer = rx_radio.read(rx_radio.payloadSize)
-            payload.append(struct.unpack(">f", buffer)[0])
+            payload.append(struct.unpack(">s", buffer)[0])
 
             print(
                 "Received {} bytes on pipe {}: {}".format(
@@ -69,7 +69,7 @@ def rx(rx_radio):
 def tx(tx_radio):
     tx_radio.stopListening()
     while(True):
-        buffer = struct.pack(">f", 1.0)
+        buffer = struct.pack(">s", "hello")
 
         result = tx_radio.write(buffer)
 
