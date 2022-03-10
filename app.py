@@ -86,10 +86,10 @@ def decrypt():
 
 
 def main():
-    role = input("select role 1 tx 2 rx")
+    role = int(input("select role 1 tx 2 rx"))-1
     tx_radio, rx_radio = setup(role)
     print(f"TX: {tx_radio}, RX: {rx_radio}")
-    if role == 1:
+    if not role:
         tx(tx_radio)
     else:
         rx(rx_radio)
