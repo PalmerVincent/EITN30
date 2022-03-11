@@ -13,7 +13,7 @@ A system based on two RPis and nRF24l01 transceivers to send ip packets over rad
 ## TODO
 - [ ] Testing
 - [ ] Fragmenting of packets
-- [ ] Putting together packets
+- [ ] Putting together fragments
 - [ ] Fixing frames
 - [ ] "Beautifying code"
 
