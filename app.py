@@ -33,7 +33,7 @@ def setup(role):
         nodeTun = TunTap(nic_type="Tun", nic_name="longge")
         nodeTun.config(ip="192.168.1.2", mask="255.255.255.0")
         header = {
-            "VERSION": "0b0100", 
+            "VERSION": "0b0100",
             "IHL": "0b0101",
             "DSCP": "0b000000",
             "ECN": "0b00",
@@ -53,14 +53,14 @@ def setup(role):
         baseTun = TunTap(nic_type="Tun", nic_name="longge")
         baseTun.config(ip="192.168.1.1", mask="255.255.255.0")
         header = {
-            "VERSION": "0b0100", 
+            "VERSION": "0b0100",
             "IHL": "0b0101",
             "DSCP": "0b000000",
             "ECN": "0b00",
             "TotLen": "0x003c",
             "Identification": "0x2c2d",
-            "Flags": "0b000", # 0b001 when excpecting more fragments
-            "FragmentOffset": "0b0000000000000", # Used when fragmenting
+            "Flags": "0b000",  # 0b001 when excpecting more fragments
+            "FragmentOffset": "0b0000000000000",  # Used when fragmenting
             "TTL": "0x80",
             "Protocol": "0x01",
             "Checksum": "0x0000",
@@ -82,7 +82,7 @@ def setup(role):
 
 
 def initialize():
-    pass 
+    pass
 
 
 def rx():
@@ -105,9 +105,9 @@ def rx():
             )
 
 
-def tx():
+def tx(message):
     tx_radio.stopListening()
-    message = b'hi'
+    message = bytes(message)
     pSize = len(message)
     fString = ">"+str(pSize)+"s"
     buffer = struct.pack(fString, message)
@@ -118,28 +118,69 @@ def tx():
             print("Sent successfully")
         else:
             print("Not successful")
-        time.sleep(1)
+        time.sleep(10)
+
+
+def txBase():
+    tx_radio.stopListening()
+    i = 0
+    while(True):
+
+        if len(payload[i]):
+
+            message = bytes("ping"+str(payload[i]))
+            pSize = len(message)
+
+            fString = ">"+str(pSize)+"s"
+            buffer = struct.pack(fString, message)
+
+            result = tx_radio.write(buffer)
+            if (result):
+                i += 1
+                print("Sent successfully")
+            else:
+                print("Not successful")
+        time.sleep(10)
 
 
 def base():
-    pass
+    rxThread = threading.Thread(target=rx, args=())
+    txThread = threading.Thread(target=txBase, args=())
+
+    rxThread.start()
+    time.sleep(10)
+    txThread.start()
+
+    rxThread.join()
+    txThread.join()
 
 
 def node():
-    pass
+    destIp = input("Enter the ipv4 adress you want to ping")
+    rxThread = threading.Thread(target=rx, args=())
+    txThread = threading.Thread(target=tx, args=(destIp))
+
+    rxThread.start()
+    time.sleep(10)
+    txThread.start()
+
+    rxThread.join()
+    txThread.join()
+
 
 def createFrame():
     pass
+
 
 def fragment():
     pass
 
 #
-#def encrypt():
+# def encrypt():
 #    pass
 
 
-#def decrypt():
+# def decrypt():
 #    pass
 #
 
