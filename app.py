@@ -190,9 +190,9 @@ def main():
     setup(role)
 
     if not role:
-        tx()
+        base()
     else:
-        rx()
+        node()
 #    check = True
 #    while check:
 #        pass
