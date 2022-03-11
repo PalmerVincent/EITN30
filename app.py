@@ -173,12 +173,16 @@ def node():
     txThread.join()
 
 
-def createFrame():
+def create_packet():
     pass
 
 
-def fragment():
-    pass
+def fragment(data):
+    
+    nbrParts = 0
+    dataLength = len(data)
+    
+    
 
 #
 # def encrypt():
