@@ -11,6 +11,7 @@ from RF24 import RF24, RF24_PA_LOW
 
 tx_radio = RF24(17, 0)
 rx_radio = RF24(27, 60)
+mutex = threading.Lock()
 payload = []
 
 
@@ -94,13 +95,15 @@ def rx():
             pSize = rx_radio.getDynamicPayloadSize()
             buffer = rx_radio.read(pSize)
             fString = ">" + str(pSize) + "s"
-            payload.append(struct.unpack(fString, buffer)[0])
+            mutex.acquire()
+            p = payload.append(struct.unpack(fString, buffer)[0])
+            mutex.release()
 
             print(
                 "Received {} bytes on pipe {}: {}".format(
                     len(buffer),
                     pipe_number,
-                    payload[-1]
+                    p
                 )
             )
 
@@ -125,10 +128,10 @@ def txBase():
     tx_radio.stopListening()
     i = 0
     while(True):
-
-        if len(payload[i]):
-
+        mutex.acquire()
+        if len(payload) >= i:
             message = bytes("ping"+str(payload[i]))
+            mutex.release()
             pSize = len(message)
 
             fString = ">"+str(pSize)+"s"
@@ -140,6 +143,8 @@ def txBase():
                 print("Sent successfully")
             else:
                 print("Not successful")
+        else:
+            mutex.release()
         time.sleep(10)
 
 
