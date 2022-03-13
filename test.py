@@ -71,11 +71,13 @@ def packetTest():
     #header["Destination"] = bytes(map(int, dest.split(".")))
     
     header_bytes = [
-        ((header["VERSION"] << 4) + header["IHL"] << 8) + ((header["DSCP"] << 2) + header["ECN"]),
+        (header["VERSION"] << 4) + header["IHL"],
+        (header["DSCP"] << 2) + header["ECN"],
         header["TotLen"],
         header["Identification"],
         ((header["Flags"] << 13) + header["FragmentOffset"]), 
-        (header["TTL"] << 8) + header["Protocol"],
+        header["TTL"],
+        header["Protocol"],
         header["Checksum"],
         header["Source"] & 0xFFFF,
         header["Destination"]
