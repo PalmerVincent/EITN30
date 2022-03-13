@@ -178,6 +178,14 @@ def create_packet():
 
 
 def fragment(data):
+    """ Fragments incoming binary data in bytes
+
+    Args:
+        data (bytes): Binary data converted with "bytes"
+
+    Returns:
+        list: list of fragments 
+    """
     
     fragments = []
     
