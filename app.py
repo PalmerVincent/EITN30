@@ -89,6 +89,7 @@ def initialize():
 
 def rx():
     rx_radio.startListening()
+    global handled_packet
     buffer = []
     while(True):
         has_payload, pipe_number = rx_radio.available_pipe()
@@ -132,6 +133,7 @@ def txNode(packet: bytes):
 
 def txBase():
     tx_radio.stopListening()
+    global handled_packet
     while(True):
         mutex.acquire()
         if len(payload) >= handled_packet and len(payload) > 0:
