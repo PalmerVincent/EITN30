@@ -114,15 +114,19 @@ def tx(packet: bytes):
     tx_radio.stopListening()
     fragments = fragment(packet)
 
-    while(True):
-        for frag in fragments:
-            
-            result = tx_radio.write(frag)
-            if (result):
-                print("Sent successfully frag: ", frag)
-            else:
-                print("Not successful frag: ", frag)
+    for frag in fragments:
+        
+        result = tx_radio.write(frag)
+        if (result):
+            print("Sent successfully frag: ", frag)
+        else:
+            print("Not successful frag: ", frag)
+
+def txNode(packet: bytes):
+    while True:
+        tx(packet)
         time.sleep(1)
+
 
 
 def txBase():
@@ -131,19 +135,9 @@ def txBase():
     while(True):
         mutex.acquire()
         if len(payload) >= i and len(payload) > 0:
-            message = bytes("ping "+str(payload[i]), 'utf-8')
+            message = b''.join([b'ping: ', payload[i]])
             mutex.release()
-            pSize = len(message)
-
-            fString = ">"+str(pSize)+"s"
-            buffer = struct.pack(fString, message)
-
-            result = tx_radio.write(buffer)
-            if (result):
-                i += 1
-                print("Sent successfully")
-            else:
-                print("Not successful")
+            tx(message)
         else:
             mutex.release()
         time.sleep(0.01)
