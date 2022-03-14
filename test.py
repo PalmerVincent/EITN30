@@ -2,7 +2,7 @@ import struct
 import random
 
 
-def fragment(data) -> list:
+def fragment(data: bytes) -> list:
     """ Fragments incoming binary data in bytes
 
     Args:
@@ -18,31 +18,15 @@ def fragment(data) -> list:
     if (dataLength == 0):
         return
     
-   # nbrParts = 0
-    
-    
     max_size = 30
     
-    #if ((dataLength % max_size) == 0):
-        #nbrParts = dataLength / max_size
-        
-  #  else:
-        #nbrParts = int((dataLength - (dataLength % max_size)) / max_size) + 1
-
-      #  padding = [0 for _ in range(max_size - (dataLength % max_size))]
-        
-      #  padding[len(padding) - 1] += len(padding)
-        
-    #    data += bytes(padding)
     id = 1
     
     while data:
         if (len(data) < 30):
             id = 65535
-            fragments.append(id.to_bytes(2, 'big') + data[:max_size])
-        else:
-            fragments.append(id.to_bytes(2, 'big')+ data[:max_size])
-            
+           
+        fragments.append(id.to_bytes(2, 'big') + data[:max_size])    
         data = data[max_size:]
         id += 1
     
@@ -54,10 +38,12 @@ def fragment(data) -> list:
 def fragmentTest():
     data = [random.randint(0, 255) for _ in range(100)]
     print(bytes(data))
+    print(type(bytes(data)))
     print(len(data))
     print('\n')
     
     fragments = fragment(bytes(data))
+    print(type(fragments))
     print(fragments)   
     print('\n')
 
