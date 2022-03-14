@@ -13,6 +13,7 @@ tx_radio = RF24(17, 0)
 rx_radio = RF24(27, 60)
 mutex = threading.Lock()
 payload = []
+handled_packet = 0
 FRAG_SIZE = 30
 
 def setup(role):
@@ -102,6 +103,7 @@ def rx():
             
             if id == 0xFFFF: #packet is fragmented and this is the first fragment 
                 mutex.acquire()
+                handled_packet += 1
                 payload.append(b''.join(buffer))
                 
                 print("Payload added: ", payload[-1])
@@ -130,14 +132,14 @@ def txNode(packet: bytes):
 
 def txBase():
     tx_radio.stopListening()
-    i = 0
     while(True):
         mutex.acquire()
-        if len(payload) >= i and len(payload) > 0:
-            message = b''.join([b'ping: ', payload[i]])
+        if len(payload) >= handled_packet and len(payload) > 0:
+            message =(b''.join([b'ping: ', payload[i]]))
             mutex.release()
             tx(message)
-            i += 1
+            handled_packet += 1
+
         else:
             mutex.release()
         time.sleep(0.01)
