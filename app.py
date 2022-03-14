@@ -11,6 +11,7 @@ from RF24 import RF24, RF24_PA_LOW
 
 tx_radio = RF24(17, 0)
 rx_radio = RF24(27, 60)
+tun = TunTap(nic_type="Tun", nic_name="longge")
 mutex = threading.Lock()
 payload = []
 handled_packet = -1
@@ -32,44 +33,14 @@ def setup(role):
 
     if role == 1:
         # Node
-        nodeTun = TunTap(nic_type="Tun", nic_name="longge")
-        nodeTun.config(ip="192.168.1.2", mask="255.255.255.0")
-        header = {
-            "VERSION": "0b0100",
-            "IHL": "0b0101",
-            "DSCP": "0b000000",
-            "ECN": "0b00",
-            "TotLen": "0x003c",
-            "Identification": "0x2c2d",
-            "Flags": "0b000",
-            "FragmentOffset": "0b0000000000000",
-            "TTL": "0x80",
-            "Protocol": "0x01",
-            "Checksum": "0x0000",
-            "Source": "0xc0a80102",
-            "Destination": "0xc0a80101"
-        }
+       
+        tun.config(ip="192.168.1.2", mask="255.255.255.0")
+     
 
     if role == 0:
         # Base
-        baseTun = TunTap(nic_type="Tun", nic_name="longge")
-        baseTun.config(ip="192.168.1.1", mask="255.255.255.0")
-        header = {
-            "VERSION": "0b0100",
-            "IHL": "0b0101",
-            "DSCP": "0b000000",
-            "ECN": "0b00",
-            "TotLen": "0x003c",
-            "Identification": "0x2c2d",
-            "Flags": "0b000",  # 0b001 when excpecting more fragments
-            "FragmentOffset": "0b0000000000000",  # Used when fragmenting
-            "TTL": "0x80",
-            "Protocol": "0x01",
-            "Checksum": "0x0000",
-            "Source": "0xc0a80101",
-            "Destination": "0xc0a80102"
-        }
-
+        tun.config(ip="192.168.1.1", mask="255.255.255.0")
+ 
     # tx_radio.setAutoAck(False)
     # rx_radio.setAutoAck(False)
 
@@ -86,6 +57,11 @@ def setup(role):
 def initialize():
     pass
 
+
+def rx_tun():
+    buffer = tun.read()
+    print(buffer)
+    tx(buffer)
 
 def rx():
     rx_radio.startListening()
@@ -148,7 +124,7 @@ def txBase():
 
 
 def base():
-    rxThread = threading.Thread(target=rx, args=())
+    rxThread = threading.Thread(target=rx_tun, args=())
     txThread = threading.Thread(target=txBase, args=())
 
     rxThread.start()
@@ -163,7 +139,7 @@ def node():
     destIp = input("Enter the ipv4 adress you want to ping: ")
     data = bytes(input("Enter message: "), 'utf-8')
 
-    rxThread = threading.Thread(target=rx, args=())
+    rxThread = threading.Thread(target=rx_tun, args=())
     txThread = threading.Thread(target=txNode, args=[create_packet(destIp, data)])
 
     rxThread.start()
