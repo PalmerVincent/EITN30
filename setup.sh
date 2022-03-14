@@ -114,17 +114,19 @@ echo "Setting up Tun device and forwarding"
 cd ~/git/EITN30
 echo "Enter base for base node: " 
 read base
-echo "You entered $base"
+
 
 if [[ $base == "base" ]]
 then
-    #sudo ip tuntap add mode tun dev longge
-    #sudo ip addr add 192.168.1.1/24 dev longge
-    #sudo ip link set dev longge up
+    echo "You entered $base"
+    sudo ip tuntap add mode tun dev longge
+    sudo ip addr add 192.168.1.1/24 dev longge
+    sudo ip link set dev longge up
     ./routing.sh
 else
-    #sudo ip tuntap add mode tun dev longge
-    #sudo ip addr add 192.168.1.2/24 dev longge
-    #sudo ip link set dev longge up
-    sudo ip route add default via 192.168.1.1 dev longge
+    echo "You entered not base"
+    sudo ip tuntap add mode tun dev longge
+    sudo ip addr add 192.168.1.2/24 dev longge
+    sudo ip link set dev longge up
+    #sudo ip route add default via 192.168.1.1 dev longge
 fi
