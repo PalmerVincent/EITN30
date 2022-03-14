@@ -121,7 +121,7 @@ then
     ip tuntap add mode tun dev longge
     ip addr add 192.168.1.1/24 dev longge
     ip link set dev longge up
-    ./forward.sh
+    ~/git/EITN30/routing.sh
 else 
     ip tuntap add mode tun dev longge
     ip addr add 192.168.1.2/24 dev longge
