@@ -120,7 +120,6 @@ def txBase():
             message = (b''.join([b'ping: ', payload[handled_packet]]))
             mutex.release()
             tx(message)
-
         else:
             mutex.release()
         time.sleep(0.01)
