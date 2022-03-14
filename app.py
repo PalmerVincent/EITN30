@@ -96,7 +96,8 @@ def rx():
             buffer = rx_radio.read(pSize)
             fString = ">" + str(pSize) + "s"
             mutex.acquire()
-            p = payload.append(struct.unpack(fString, buffer)[0])
+            payload.append(struct.unpack(fString, buffer)[0])
+            p = payload[-1]
             mutex.release()
 
             print(
@@ -248,6 +249,8 @@ def fragment(data: bytes) -> list:
     
     
     return fragments   
+
+def defragment(fragments: list, )
 
 #
 # def encrypt():
