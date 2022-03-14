@@ -137,7 +137,7 @@ def txBase():
     while(True):
         mutex.acquire()
         if len(payload) >= handled_packet and len(payload) > 0:
-            message =(b''.join([b'ping: ', payload[i]]))
+            message =(b''.join([b'ping: ', payload[handled_packet]]))
             mutex.release()
             tx(message)
             handled_packet += 1
