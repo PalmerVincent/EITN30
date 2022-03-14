@@ -131,7 +131,7 @@ def txBase():
     while(True):
         mutex.acquire()
         if len(payload) >= i and len(payload) > 0:
-            message = bytes("ping"+str(payload[i]))
+            message = bytes("ping"+str(payload[i]), 'utf-8')
             mutex.release()
             pSize = len(message)
 
