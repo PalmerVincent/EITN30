@@ -91,10 +91,29 @@ def rx():
     buffer = []
     while(True):
         has_payload, pipe_number = rx_radio.available_pipe()
-        if(has_payload):
+        if has_payload:
             pSize = rx_radio.getDynamicPayloadSize()
-            buffer.append(rx_radio.read(pSize))
-            if buffer[-1][:2]
+            fragment = rx_radio.read(pSize)
+            print("Frag recieved: ", fragment)
+        
+            id = int.from_bytes(fragment[:2], 'big')
+            
+            buffer.append(fragment[2:])
+            
+            if id == 0xFFFF: #packet is fragmented and this is the first fragment
+                payload.append(b''.join(buffer))
+                print("Payload added: ", payload[-1])
+                buffer.clear()
+            
+            
+
+
+            
+
+
+
+
+
 
             mutex.acquire()
             payload.append(struct.unpack(fString, buffer)[0])
@@ -115,13 +134,12 @@ def tx(packet: bytes):
     fragments = fragment(packet)
     while(True):
         for frag in fragments:
-            buffer = frag
-            print(buffer)
-            result = tx_radio.write(buffer)
+            
+            result = tx_radio.write(frag)
             if (result):
-                print("Sent successfully")
+                print("Sent successfully frag: ", frag)
             else:
-                print("Not successful")
+                print("Not successful frag: ", frag)
         time.sleep(1)
 
 
@@ -131,7 +149,7 @@ def txBase():
     while(True):
         mutex.acquire()
         if len(payload) >= i and len(payload) > 0:
-            message = bytes("ping"+str(payload[i]), 'utf-8')
+            message = bytes("ping "+str(payload[i]), 'utf-8')
             mutex.release()
             pSize = len(message)
 
