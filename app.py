@@ -110,7 +110,8 @@ def rx():
 
 def tx(message):
     tx_radio.stopListening()
-    message = bytes(message)
+    print(message)
+    message = bytes(message,'utf-8')
     pSize = len(message)
     fString = ">"+str(pSize)+"s"
     buffer = struct.pack(fString, message)
@@ -121,7 +122,7 @@ def tx(message):
             print("Sent successfully")
         else:
             print("Not successful")
-        time.sleep(10)
+        time.sleep(2)
 
 
 def txBase():
@@ -129,7 +130,7 @@ def txBase():
     i = 0
     while(True):
         mutex.acquire()
-        if len(payload) >= i:
+        if len(payload) >= i and len(payload) > 0:
             message = bytes("ping"+str(payload[i]))
             mutex.release()
             pSize = len(message)
@@ -162,8 +163,9 @@ def base():
 
 def node():
     destIp = input("Enter the ipv4 adress you want to ping")
+    print(type(destIp))
     rxThread = threading.Thread(target=rx, args=())
-    txThread = threading.Thread(target=tx, args=(destIp))
+    txThread = threading.Thread(target=tx, args=(destIp,))
 
     rxThread.start()
     time.sleep(10)
