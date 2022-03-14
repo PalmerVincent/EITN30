@@ -137,6 +137,7 @@ def txBase():
             message = b''.join([b'ping: ', payload[i]])
             mutex.release()
             tx(message)
+            i += 1
         else:
             mutex.release()
         time.sleep(0.01)
