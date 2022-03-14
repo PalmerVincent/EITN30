@@ -2,32 +2,53 @@ import struct
 import random
 
 
-def fragment(data):
+def fragment(data) -> list:
+    """ Fragments incoming binary data in bytes
+
+    Args:
+        data (bytes): Binary data converted with "bytes"
+
+    Returns:
+        list: list of fragments 
+    """
     
     fragments = []
-    
-    nbrParts = 0
     dataLength = len(data)
+    
+    if (dataLength == 0):
+        return
+    
+   # nbrParts = 0
+    
     
     max_size = 30
     
-    if ((dataLength % max_size) == 0):
-       nbrParts = dataLength / max_size
+    #if ((dataLength % max_size) == 0):
+        #nbrParts = dataLength / max_size
         
-    else:
-        nbrParts = int((dataLength - (dataLength % max_size)) / max_size) + 1
+  #  else:
+        #nbrParts = int((dataLength - (dataLength % max_size)) / max_size) + 1
 
-        padding = [0 for _ in range(max_size - (dataLength % max_size))]
+      #  padding = [0 for _ in range(max_size - (dataLength % max_size))]
         
-        padding[len(padding) - 1] += len(padding)
+      #  padding[len(padding) - 1] += len(padding)
         
-        data += bytes(padding)
+    #    data += bytes(padding)
+    id = 1
     
     while data:
-        fragments.append(data[:max_size])
+        if (len(data) < 30):
+            id = '0xFFFF'
+            fragments.append(id + data[:max_size])
+        else:
+            fragments.append(format(id, '#06x') + data[:max_size])
+            
         data = data[max_size:]
+        id += 1
+    
     
     return fragments   
+
 
 
 def fragmentTest():
@@ -42,14 +63,14 @@ def fragmentTest():
     fragments = fragment(bytes(data))
     print(fragments)
     print(len(fragment(bytes(data))))
-    sum = 0 
+    fragSum = 0 
     for i in fragments:
-        sum += int.from_bytes(i, "big")
+        fragSum += int.from_bytes(i, "big")
         print(int.from_bytes(i,"big")) 
         
         print('\n')
     
-    print(sum)
+    print(fragSum)
 
 def packetTest():
     header = {
@@ -94,5 +115,5 @@ def packetTest():
 
     
 if __name__ == '__main__':
-    #fragmenttest()
-    packetTest()
+    fragmentTest()
+    #packetTest()

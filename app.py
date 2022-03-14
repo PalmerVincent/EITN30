@@ -1,4 +1,5 @@
 from distutils.version import Version
+from pickle import NONE
 import sys
 import threading
 import argparse
@@ -216,7 +217,7 @@ def create_packet(dest: str, data: list):
     
     return packet
 
-def fragment(data):
+def fragment(data) -> list:
     """ Fragments incoming binary data in bytes
 
     Args:
@@ -227,27 +228,38 @@ def fragment(data):
     """
     
     fragments = []
-    
-    nbrParts = 0
     dataLength = len(data)
+    
+    if (dataLength == 0):
+        return
+    
+   # nbrParts = 0
+    
     
     max_size = 30
     
-    if ((dataLength % max_size) == 0):
-        nbrParts = dataLength / max_size
+    #if ((dataLength % max_size) == 0):
+        #nbrParts = dataLength / max_size
         
-    else:
-        nbrParts = int((dataLength - (dataLength % max_size)) / max_size) + 1
+  #  else:
+        #nbrParts = int((dataLength - (dataLength % max_size)) / max_size) + 1
 
-        padding = [0 for _ in range(max_size - (dataLength % max_size))]
+      #  padding = [0 for _ in range(max_size - (dataLength % max_size))]
         
-        padding[len(padding) - 1] += len(padding)
+      #  padding[len(padding) - 1] += len(padding)
         
-        data += bytes(padding)
+    #    data += bytes(padding)
+    id = 1
     
     while data:
-        fragments.append(data[:max_size])
+        if (len(data) < 30):
+            id = '0xFFFF'
+            fragments.append(id + data[:max_size])
+        else:
+            fragments.append(format(id, '#06x') + data[:max_size])
+            
         data = data[max_size:]
+        id += 1
     
     
     return fragments   
