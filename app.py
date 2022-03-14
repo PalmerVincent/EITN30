@@ -88,13 +88,14 @@ def initialize():
 
 def rx():
     rx_radio.startListening()
-
+    buffer = []
     while(True):
         has_payload, pipe_number = rx_radio.available_pipe()
         if(has_payload):
             pSize = rx_radio.getDynamicPayloadSize()
-            buffer = rx_radio.read(pSize)
-            fString = ">" + str(pSize) + "s"
+            buffer.append(rx_radio.read(pSize))
+            if buffer[-1][:2]
+
             mutex.acquire()
             p = payload.append(struct.unpack(fString, buffer)[0])
             mutex.release()
@@ -114,6 +115,7 @@ def tx(packet: bytes):
     while(True):
         for frag in fragments:
             buffer = frag
+            print(buffer)
             result = tx_radio.write(buffer)
             if (result):
                 print("Sent successfully")
