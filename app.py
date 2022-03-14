@@ -11,8 +11,12 @@ from RF24 import RF24, RF24_PA_LOW
 
 tx_radio = RF24(17, 0)
 rx_radio = RF24(27, 60)
+mutex = threading.Lock()
+payload = []
+handled_packet = -1
 tun = TunTap(nic_type="Tun", nic_name="longge")
 FRAG_SIZE = 30
+
 
 def setup(role):
     addr = [b"base", b"node"]
@@ -50,100 +54,8 @@ def setup(role):
     rx_radio.flush_rx()
 
 
-def fragment(data: bytes) -> list:
-    """ Fragments incoming binary data in bytes
-
-    Args:
-        data (bytes): Binary data converted with "bytes"
-
-    Returns:
-        list: list of fragments 
-    """
-
-    fragments = []
-    dataLength = len(data)
-
-    if (dataLength == 0):
-        return
-
-    id = 1
-
-    while data:
-        if (len(data) < 30):
-            id = 65535
-
-        fragments.append(id.to_bytes(2, 'big') + data[:FRAG_SIZE])
-        data = data[FRAG_SIZE:]
-        id += 1
-
-    return fragments
-
-
-def tx(packet: bytes):
-    tx_radio.stopListening()
-    fragments = fragment(packet)
-
-    for frag in fragments:
-        result = tx_radio.write(frag)
-        if (result):
-            print("Sent successfully frag: ", frag)
-        else:
-            print("Not successful frag: ", frag)
-
-
-
-def tx2():
-    # wait for new data from tun -> send the data over radio
-    while True:
-        buffer = tun.read(1522)
-        if len(buffer):
-            print("Got package from tun interface: ", buffer)
-            tx(buffer)
-    
-def rx2():
-    # wait for incoming data on radio -> send the data to tun interface
-    rx_radio.startListening()
-    buffer = []
-    while True:
-        has_payload, pipe_number = rx_radio.available_pipe()
-        if has_payload:
-            pSize = rx_radio.getDynamicPayloadSize()
-            fragment = rx_radio.read(pSize)
-            print("Frag recieved: ", fragment)
-
-            id = int.from_bytes(fragment[:2], 'big')
-
-            buffer.append(fragment[2:])
-
-            if id == 0xFFFF:  # packet is fragmented and this is the first fragment
-                packet = b''.join(buffer)
-                print("Payload added: ", packet)
-                buffer.clear()
-                tun.write(packet)
-
-
-def main():
-    tx_thread = threading.Thread(target=tx2, args=())
-    rx_thread = threading.Thread(target=rx2, args=())
-    
-    rx_thread.start()
-    tx_thread.start()
-    
-    tx_thread.join()
-    rx_thread.join()
-
-
-if __name__ == "__main__":
-    role = int(
-        input("Select role of machine. Enter '0' for base and 1 for node: "))
-    setup(role)
-    main()
-
-
-'''
-mutex = threading.Lock()
-payload = []
-handled_packet = -1
+def initialize():
+    pass
 
 
 def rx_tun():
@@ -179,6 +91,20 @@ def rx():
         tun.write(payload[-1])
     
 
+
+def tx(packet: bytes):
+    tx_radio.stopListening()
+    fragments = fragment(packet)
+
+    for frag in fragments:
+
+        result = tx_radio.write(frag)
+        if (result):
+            print("Sent successfully frag: ", frag)
+        else:
+            print("Not successful frag: ", frag)
+
+
 def txNode(packet: bytes):
     while True:
         tx(packet)
@@ -210,12 +136,6 @@ def base():
     rxThread.join()
     txThread.join()
 
-
-def node2():
-    buffer = tun.read(1522)
-    print(buffer)
-    tx(buffer)
-    
 
 def node():
     destIp = input("Enter the ipv4 adress you want to ping: ")
@@ -272,4 +192,62 @@ def create_packet(dest: str, data: list) -> bytes:
     packet = b''.join(header_bytes)
 
     return packet
-'''
+
+
+def fragment(data: bytes) -> list:
+    """ Fragments incoming binary data in bytes
+
+    Args:
+        data (bytes): Binary data converted with "bytes"
+
+    Returns:
+        list: list of fragments 
+    """
+
+    fragments = []
+    dataLength = len(data)
+
+    if (dataLength == 0):
+        return
+
+    id = 1
+
+    while data:
+        if (len(data) < 30):
+            id = 65535
+
+        fragments.append(id.to_bytes(2, 'big') + data[:FRAG_SIZE])
+        data = data[FRAG_SIZE:]
+        id += 1
+
+    return fragments
+
+
+#
+# def encrypt():
+#    pass
+
+
+# def decrypt():
+#    pass
+#
+
+def main():
+    role = int(
+        input("Select role of machine. Enter '0' for base and 1 for node: "))
+    setup(role)
+
+    if not role:
+        base()
+    else:
+        node()
+#    check = True
+#    while check:
+#        pass
+        # Kolla om transmit
+        # Kolla receive
+        # Om tom skicka
+
+
+if __name__ == "__main__":
+    main()
