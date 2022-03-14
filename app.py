@@ -255,10 +255,10 @@ def fragment(data) -> list:
     
     while data:
         if (len(data) < 30):
-            id = '0xFFFF'
-            fragments.append(id + data[:max_size])
+            id = 65535
+            fragments.append(id.to_bytes(2, 'big') + data[:max_size])
         else:
-            fragments.append(format(id, '#06x') + data[:max_size])
+            fragments.append(id.to_bytes(2, 'big') + data[:max_size])
             
         data = data[max_size:]
         id += 1

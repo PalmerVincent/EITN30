@@ -38,10 +38,10 @@ def fragment(data) -> list:
     
     while data:
         if (len(data) < 30):
-            id = '0xFFFF'
-            fragments.append(id + data[:max_size])
+            id = 65535
+            fragments.append(id.to_bytes(2, 'big') + data[:max_size])
         else:
-            fragments.append(format(id, '#06x') + data[:max_size])
+            fragments.append(id.to_bytes(2, 'big')+ data[:max_size])
             
         data = data[max_size:]
         id += 1
@@ -54,23 +54,13 @@ def fragment(data) -> list:
 def fragmentTest():
     data = [random.randint(0, 255) for _ in range(100)]
     print(bytes(data))
-    print(data)
     print(len(data))
-    print(sum(data))
     print('\n')
     
-    
     fragments = fragment(bytes(data))
-    print(fragments)
-    print(len(fragment(bytes(data))))
-    fragSum = 0 
-    for i in fragments:
-        fragSum += int.from_bytes(i, "big")
-        print(int.from_bytes(i,"big")) 
-        
-        print('\n')
-    
-    print(fragSum)
+    print(fragments)   
+    print('\n')
+
 
 def packetTest():
     header = {
