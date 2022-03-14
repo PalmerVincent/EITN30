@@ -100,8 +100,7 @@ def rx():
             
             buffer.append(fragment[2:])
             
-            if id == 0xFFFF: #packet is fragmented and this is the first fragment
-                
+            if id == 0xFFFF: #packet is fragmented and this is the first fragment 
                 mutex.acquire()
                 payload.append(b''.join(buffer))
                 
@@ -156,10 +155,11 @@ def base():
 
 
 def node():
-    destIp = input("Enter the ipv4 adress you want to ping")
-    print(type(destIp))
+    destIp = input("Enter the ipv4 adress you want to ping: ")
+    data = bytes(input("Enter message: "), 'utf-8')
+
     rxThread = threading.Thread(target=rx, args=())
-    txThread = threading.Thread(target=tx, args=(destIp,))
+    txThread = threading.Thread(target=txNode, args=[create_packet(destIp, data)])
 
     rxThread.start()
     time.sleep(0.5)
@@ -169,7 +169,7 @@ def node():
     txThread.join()
 
 
-def create_packet(dest: str, data: list):
+def create_packet(dest: str, data: list) -> bytes:
     
     header = {
             "VERSION": 0b0100, # 4 bits
@@ -190,23 +190,21 @@ def create_packet(dest: str, data: list):
     header["Destination"] = bytes(map(int, dest.split(".")))
     
     header_bytes = [
-        (header["VERSION"] << 4) + header["IHL"],
-        (header["DSCP"] << 2) + header["ECN"],
-        header["TotLen"],
-        header["Identification"],
-        ((header["Flags"] << 13) + header["FragmentOffset"]), 
-        header["TTL"],
-        header["Protocol"],
-        header["Checksum"],
-        header["Source"] & 0xFFFF,
+        ((header["VERSION"] << 4) + header["IHL"]).to_bytes(1,'big'),
+        ((header["DSCP"] << 2) + header["ECN"]).to_bytes(1, 'big'),
+        header["TotLen"].to_bytes(2,'big'),
+        header["Identification"].to_bytes(2,'big'),
+        ((header["Flags"] << 13) + header["FragmentOffset"]).to_bytes(2,'big'), 
+        header["TTL"].to_bytes(1,'big'),
+        header["Protocol"].to_bytes(1,'big'),
+        header["Checksum"].to_bytes(1,'big'),
+        (header["Source"] & 0xFFFF).to_bytes(4,'big'),
         header["Destination"]
     ]
-
-    payload = data
+    #header_bytes.append(bytes(payload))
     
-    header_bytes.append(bytes(payload))
-    
-    packet = header_bytes
+    header_bytes.append(data)
+    packet = b''.join(header_bytes)
     
     return packet
 
