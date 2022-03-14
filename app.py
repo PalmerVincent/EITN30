@@ -59,7 +59,7 @@ def initialize():
 
 
 def rx_tun():
-    buffer = tun.read()
+    buffer = tun.read(1522)
     print(buffer)
     tx(buffer)
 
