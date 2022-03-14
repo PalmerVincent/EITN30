@@ -118,13 +118,13 @@ echo "You entered $base"
 
 if [[ $base == "base" ]]
 then
-    ip tuntap add mode tun dev longge
-    ip addr add 192.168.1.1/24 dev longge
-    ip link set dev longge up
+    sudo ip tuntap add mode tun dev longge
+    sudo ip addr add 192.168.1.1/24 dev longge
+    sudo ip link set dev longge up
     sudo ~/git/EITN30/routing.sh
-else 
-    ip tuntap add mode tun dev longge
-    ip addr add 192.168.1.2/24 dev longge
-    ip link set dev longge up
+else
+    sudo ip tuntap add mode tun dev longge
+    sudo ip addr add 192.168.1.2/24 dev longge
+    sudo ip link set dev longge up
     sudo ip route add default via 192.168.1.1 dev longge
 fi
