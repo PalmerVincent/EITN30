@@ -101,33 +101,17 @@ def rx():
             buffer.append(fragment[2:])
             
             if id == 0xFFFF: #packet is fragmented and this is the first fragment
+                
+                mutex.acquire()
                 payload.append(b''.join(buffer))
                 print("Payload added: ", payload[-1])
+                mutex.release()
                 buffer.clear()
 
-            mutex.acquire()
-            payload.append(struct.unpack(fString, buffer)[0])
-            p = payload[-1]
-            mutex.release()
 
-            print(
-                "Received {} bytes on pipe {}: {}".format(
-                    len(buffer),
-                    pipe_number,
-                    p
-                )
-            )
-
-
-def tx(message):
+def tx(packet: bytes):
     tx_radio.stopListening()
-    
-    message = bytes(message,'utf-8')
-    print(message)
-    pSize = len(message)
-    fString = ">"+str(pSize)+"s"
-    buffer = struct.pack(fString, message)
-    print(buffer)
+    fragments = fragment(packet)
 
     while(True):
         for frag in fragments:
