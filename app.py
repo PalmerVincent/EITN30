@@ -13,7 +13,7 @@ tx_radio = RF24(17, 0)
 rx_radio = RF24(27, 60)
 mutex = threading.Lock()
 payload = []
-handled_packet = 0
+handled_packet = -1
 FRAG_SIZE = 30
 
 def setup(role):
