@@ -110,11 +110,13 @@ def rx():
 
 def tx(message):
     tx_radio.stopListening()
-    print(message)
+    
     message = bytes(message,'utf-8')
+    print(message)
     pSize = len(message)
     fString = ">"+str(pSize)+"s"
     buffer = struct.pack(fString, message)
+    print(buffer)
 
     while(True):
         result = tx_radio.write(buffer)
@@ -122,7 +124,7 @@ def tx(message):
             print("Sent successfully")
         else:
             print("Not successful")
-        time.sleep(2)
+        time.sleep(1)
 
 
 def txBase():
@@ -146,7 +148,7 @@ def txBase():
                 print("Not successful")
         else:
             mutex.release()
-        time.sleep(10)
+        time.sleep(0.01)
 
 
 def base():
@@ -154,7 +156,7 @@ def base():
     txThread = threading.Thread(target=txBase, args=())
 
     rxThread.start()
-    time.sleep(10)
+    time.sleep(0.5)
     txThread.start()
 
     rxThread.join()
@@ -168,7 +170,7 @@ def node():
     txThread = threading.Thread(target=tx, args=(destIp,))
 
     rxThread.start()
-    time.sleep(10)
+    time.sleep(0.5)
     txThread.start()
 
     rxThread.join()
