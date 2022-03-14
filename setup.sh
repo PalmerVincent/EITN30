@@ -127,3 +127,4 @@ else
     ip addr add 192.168.1.2/24 dev longge
     ip link set dev longge up
     sudo ip route add default via 192.168.1.1 dev longge
+fi
