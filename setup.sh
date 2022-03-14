@@ -106,5 +106,24 @@ echo ""
 echo ""
 
 sudo python3 setup.py install
-
+ 
 echo "Install complete"
+
+echo "Setting up Tun device and forwarding"
+
+
+echo "Enter base for base node: " 
+read base
+echo "You entered $base"
+
+if [[ $base == "base" ]]
+then
+    ip tuntap add mode tun dev longge
+    ip addr add 192.168.1.1/24 dev longge
+    ip link set dev longge up
+    ./forward.sh
+else 
+    ip tuntap add mode tun dev longge
+    ip addr add 192.168.1.2/24 dev longge
+    ip link set dev longge up
+    sudo ip route add default via 192.168.1.1 dev longge
