@@ -13,7 +13,7 @@ tx_radio = RF24(17, 0)
 rx_radio = RF24(27, 60)
 mutex = threading.Lock()
 payload = []
-
+FRAG_SIZE = 30
 
 def setup(role):
     addr = [b"base", b"node"]
@@ -101,6 +101,7 @@ def rx():
             buffer.append(fragment[2:])
             
             if id == 0xFFFF: #packet is fragmented and this is the first fragment
+                
                 mutex.acquire()
                 payload.append(b''.join(buffer))
                 
@@ -112,6 +113,7 @@ def rx():
 def tx(packet: bytes):
     tx_radio.stopListening()
     fragments = fragment(packet)
+
     while(True):
         for frag in fragments:
             
@@ -160,13 +162,10 @@ def base():
 
 
 def node():
-    destIp = input("Enter the ipv4 adress you want to ping: ")
-    data = bytes(input("Enter the data: "), 'utf-8')
-    packet = create_packet(destIp, data)
-    
-    print(packet)
+    destIp = input("Enter the ipv4 adress you want to ping")
+    print(type(destIp))
     rxThread = threading.Thread(target=rx, args=())
-    txThread = threading.Thread(target=tx, args=[packet])
+    txThread = threading.Thread(target=tx, args=(destIp,))
 
     rxThread.start()
     time.sleep(0.5)
@@ -176,11 +175,11 @@ def node():
     txThread.join()
 
 
-def create_packet(dest: str, data: bytes):
+def create_packet(dest: str, data: list):
     
     header = {
             "VERSION": 0b0100, # 4 bits
-            "IHL": 0b0101, # 4 bis
+            "IHL": 0b0101, # 4 bits
             "DSCP": 0b000000, # 6 bits
             "ECN": 0b00, # 2 bits
             "TotLen": 0x003c, # 2 bytes 
@@ -197,21 +196,23 @@ def create_packet(dest: str, data: bytes):
     header["Destination"] = bytes(map(int, dest.split(".")))
     
     header_bytes = [
-        ((header["VERSION"] << 4) + header["IHL"]).to_bytes(1,'big'),
-        ((header["DSCP"] << 2) + header["ECN"]).to_bytes(1, 'big'),
-        header["TotLen"].to_bytes(2,'big'),
-        header["Identification"].to_bytes(2,'big'),
-        ((header["Flags"] << 13) + header["FragmentOffset"]).to_bytes(2,'big'), 
-        header["TTL"].to_bytes(1,'big'),
-        header["Protocol"].to_bytes(1,'big'),
-        header["Checksum"].to_bytes(1,'big'),
-        (header["Source"] & 0xFFFF).to_bytes(4,'big'),
+        (header["VERSION"] << 4) + header["IHL"],
+        (header["DSCP"] << 2) + header["ECN"],
+        header["TotLen"],
+        header["Identification"],
+        ((header["Flags"] << 13) + header["FragmentOffset"]), 
+        header["TTL"],
+        header["Protocol"],
+        header["Checksum"],
+        header["Source"] & 0xFFFF,
         header["Destination"]
     ]
-    #header_bytes.append(bytes(payload))
+
+    payload = data
     
-    header_bytes.append(data)
-    packet = b''.join(header_bytes)
+    header_bytes.append(bytes(payload))
+    
+    packet = header_bytes
     
     return packet
 
@@ -231,23 +232,23 @@ def fragment(data: bytes) -> list:
     if (dataLength == 0):
         return
     
-    max_size = 30
-
     id = 1
     
     while data:
         if (len(data) < 30):
             id = 65535
             
-        fragments.append(id.to_bytes(2, 'big') + data[:max_size])    
-        data = data[max_size:]
+        fragments.append(id.to_bytes(2, 'big') + data[:FRAG_SIZE])    
+        data = data[FRAG_SIZE:]
         id += 1
     
     
     return fragments   
 
-def defragment(fragments: list, )
 
+
+    
+    
 #
 # def encrypt():
 #    pass
