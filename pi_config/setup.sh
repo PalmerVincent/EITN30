@@ -40,7 +40,7 @@ fi
 echo "Configring nano"
 echo ""
 echo ""
-cp ~/git/EITN30/.nanorc ~/.nanorc
+cp ~/git/EITN30/pi_config/.nanorc ~/.nanorc
 
 
 if [[ -f "/usr/local/lib/librf24*" ]]
@@ -111,7 +111,7 @@ echo "Install complete"
 
 echo "Setting up Tun device and forwarding"
 
-cd ~/git/EITN30
+cd ~/git/EITN30/pi_config
 echo "Enter base for base node: " 
 read base
 
