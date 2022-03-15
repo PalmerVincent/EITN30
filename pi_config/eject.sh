@@ -8,6 +8,7 @@ git push
 
 cd ..
 sudo iptables -F
+sudo iptables -t nat -F
 sudo ip link delete longge
 sudo rm -rf ~/git ~/setup.sh
 
