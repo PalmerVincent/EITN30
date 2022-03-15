@@ -22,7 +22,7 @@ rx_radio = RF24(27, 60)
 
 buffer = []
 
-fun = ['\', '|', '/', '-']
+fun = "|/-\\"
 
 # Define tun device
 #tun = TunTap(nic_type="Tun", nic_name="longge")
@@ -126,7 +126,7 @@ def tx(packet: bytes):
             #print("Frag not sent: ", frag[:2])
 
 
-def node(n=1000):
+def node(n=100000):
     
     sent = 0 
     
@@ -182,7 +182,7 @@ def base():
     
     rx_radio.startListening()
     buffer = []
-    while time_end - time_start <= 30 or time_end == 0:
+    while time_end - time_start <= 10 or time_end == 0:
         has_payload, _ = rx_radio.available_pipe()
         if has_payload:
             if time_start == 0: time_start = time.monotonic()
