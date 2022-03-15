@@ -118,9 +118,9 @@ def tx(packet: bytes):
 
     for frag in fragments:
         result = tx_radio.write(frag)
-        if (result):
+        #if (result):
             #print("Frag sent id: ", frag[:2])
-        else:
+        #else:
             #print("Frag not sent: ", frag[:2])
 
 
