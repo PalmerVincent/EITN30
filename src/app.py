@@ -1,5 +1,6 @@
 
 import threading
+import time
 from tuntap import TunTap
 from RF24 import RF24, RF24_PA_LOW, RF24_2MBPS, RF24_CRC_16, RF24_CRC_8
 
@@ -20,8 +21,12 @@ rx_radio = RF24(27, 10)
 # Define tun device
 tun = TunTap(nic_type="Tun", nic_name="longge")
 
-mu = threading.Lock()
-tun_queue = []
+
+cond_in = threading.Condition()
+tun_in_queue = []
+
+cond_out = threading.Condition()
+tun_out_queue = []
 
 
 def setup(role):
@@ -122,26 +127,35 @@ def tx(packet: bytes):
             print("Frag not sent: ", frag[:2])
 
 
+def radio_tx():
+    while True:
+        with cond_in:
+            cond_in.wait_for(len(tun_in_queue) > 0)
+            packet = tun_in_queue.pop()
+        tx(packet)
+
+
 def tun_rx():
     """ Waits for new packets from tun device
     and forwards the packet to radio writing pipe
     """
     while True:
         buffer = tun.read()
-        print("read from tun", buffer)
-        if len(buffer):
-            print("Got package from tun interface:\n\t", buffer, "\n")
-            tx(buffer)
+        cond_in.acquire()
+        tun_in_queue.append(buffer)
+        cond_in.release()
+        cond_in.notify_all()
+        print("Got package from tun interface:\n\t", buffer, "\n")
 
 
-def rx():
+def radio_rx():
     """ Waits for incoming packet on reading pipe 
     and forwards the packet to tun interface
     """
     rx_radio.startListening()
     buffer = []
     while True:
-        has_payload, pipe_number = rx_radio.available_pipe()
+        has_payload, _ = rx_radio.available_pipe()
         if has_payload:
             pSize = rx_radio.getDynamicPayloadSize()
             fragment = rx_radio.read(pSize)
@@ -154,18 +168,37 @@ def rx():
                 packet = b''.join(buffer)
                 print("Packet received:\n\t", packet, "\n")
                 buffer.clear()
-                tun.write(packet)
+                cond_out.acquire()
+                tun_out_queue.append(packet)
+                cond_out.release()
+                cond_out.notify_all()
+
+
+def tun_tx():
+
+    while True:
+        with cond_out:
+            cond_out.wait_for(len(tun_out_queue) > 0)
+            packet = tun_out_queue.pop()
+        tun.write(packet)
 
 
 def main():
-    tx_thread = threading.Thread(target=tx2, args=())
-    rx_thread = threading.Thread(target=rx, args=())
+    radio_rx_t = threading.Thread(target=radio_rx, args=())
+    radio_tx_t = threading.Thread(target=radio_tx, args=())
+    tun_rx_t = threading.Thread(target=tun_rx, args=())
+    tun_tx_t = threading.Thread(target=tun_tx, args=())
 
-    rx_thread.start()
-    tx_thread.start()
+    radio_rx_t.start()
+    radio_tx_t.start()
+    time.sleep(0.05)
+    tun_rx_t.start()
+    tun_tx_t.start()
 
-    tx_thread.join()
-    rx_thread.join()
+    radio_rx_t.join()
+    radio_tx_t.join()
+    tun_rx_t.join()
+    tun_tx_t.join()
 
 
 if __name__ == "__main__":
