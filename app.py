@@ -10,7 +10,7 @@ from tuntap import TunTap
 from RF24 import RF24, RF24_PA_LOW
 
 tx_radio = RF24(17, 0)
-rx_radio = RF24(27, 60)
+rx_radio = RF24(27, 10)
 tun = TunTap(nic_type="Tun", nic_name="longge")
 FRAG_SIZE = 30
 
