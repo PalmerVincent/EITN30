@@ -121,10 +121,10 @@ def tx(packet: bytes):
 
     for frag in fragments:
         result = tx_radio.write(frag)
-        if (result):
-            print("Frag sent id: ", frag[:2])
-        else:
-            print("Frag not sent: ", frag[:2])
+        # if (result):
+        #     print("Frag sent id: ", frag[:2])
+        # else:
+        #     print("Frag not sent: ", frag[:2])
 
 
 def radio_tx():
@@ -146,7 +146,7 @@ def tun_rx():
         with cond_in:
             tun_in_queue.append(buffer)
             cond_in.notify()
-        print("Got package from tun interface:\n\t", buffer, "\n")
+        # print("Got package from tun interface:\n\t", buffer, "\n")
 
 
 def radio_rx():
@@ -161,13 +161,13 @@ def radio_rx():
             pSize = rx_radio.getDynamicPayloadSize()
             fragment = rx_radio.read(pSize)
             id = int.from_bytes(fragment[:2], 'big')
-            print("Frag received with id: ", id)
+            # print("Frag received with id: ", id)
 
             buffer.append(fragment[2:])
 
             if id == 0xFFFF:  # packet is fragmented and this is the first fragment
                 packet = b''.join(buffer)
-                print("Packet received:\n\t", packet, "\n")
+                # print("Packet received:\n\t", packet, "\n")
                 buffer.clear()
 
                 with cond_out:
