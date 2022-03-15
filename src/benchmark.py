@@ -22,6 +22,8 @@ rx_radio = RF24(27, 60)
 
 buffer = []
 
+fun = ['\', '|', '/', '-']
+
 # Define tun device
 #tun = TunTap(nic_type="Tun", nic_name="longge")
 
@@ -118,21 +120,27 @@ def tx(packet: bytes):
 
     for frag in fragments:
         result = tx_radio.write(frag)
-        if (result):
+        #if (result):
             #print("Frag sent id: ", frag[:2])
-        else:
+        #else:
             #print("Frag not sent: ", frag[:2])
 
 
-def node(n=1000000):
+def node(n=1000):
     
     sent = 0 
     
     time_start = time.monotonic()
     time_end = time.monotonic()
+    funIndex = 0
+    print(fun[funIndex])
     
     for i in range(n):
-        
+
+        if ((i % 100) == 0):
+            funIndex = (funIndex + 1) % 4
+           
+        print(fun[funIndex]) 
         # Create data
         for _ in range(30):
             byte = random.randint(0, 255)
