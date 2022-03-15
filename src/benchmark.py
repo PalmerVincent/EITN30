@@ -2,7 +2,7 @@
 import struct
 import threading
 import random
-from tuntap import TunTap
+#from tuntap import TunTap
 import time
 from RF24 import RF24, RF24_PA_LOW, RF24_2MBPS, RF24_CRC_16, RF24_CRC_8
 
@@ -21,6 +21,8 @@ tx_radio = RF24(17, 0)
 rx_radio = RF24(27, 60)
 
 buffer = []
+
+fun = ['\', '|', '/', '-']
 
 # Define tun device
 #tun = TunTap(nic_type="Tun", nic_name="longge")
@@ -124,15 +126,21 @@ def tx(packet: bytes):
             #print("Frag not sent: ", frag[:2])
 
 
-def node(n=1000000):
+def node(n=1000):
     
     sent = 0 
     
     time_start = time.monotonic()
     time_end = time.monotonic()
+    funIndex = 0
+    print(fun[funIndex])
     
     for i in range(n):
-        
+
+        if ((i % 100) == 0):
+            funIndex = (funIndex + 1) % 4
+           
+        print(fun[funIndex]) 
         # Create data
         for _ in range(30):
             byte = random.randint(0, 255)
