@@ -20,6 +20,9 @@ rx_radio = RF24(27, 10)
 # Define tun device
 tun = TunTap(nic_type="Tun", nic_name="longge")
 
+mu = threading.Lock()
+tun_queue = []
+
 
 def setup(role):
 
@@ -119,12 +122,13 @@ def tx(packet: bytes):
             print("Frag not sent: ", frag[:2])
 
 
-def tx2():
+def tun_rx():
     """ Waits for new packets from tun device
     and forwards the packet to radio writing pipe
     """
     while True:
         buffer = tun.read()
+
         if len(buffer):
             print("Got package from tun interface:\n\t", buffer, "\n")
             tx(buffer)
