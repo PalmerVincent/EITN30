@@ -11,7 +11,7 @@ FRAG_SIZE = 30
 CHANNEL_NUMBER = 100
 RADIO_POWER = RF24_PA_LOW
 DATA_RATE = RF24_2MBPS
-RETRIES_COUNT = 15
+RETRIES_COUNT = 0
 RETRIES_DELAY = 5  # 0-15
 AUTO_ACK = True
 CRC_LENGTH = RF24_CRC_16
@@ -22,7 +22,7 @@ rx_radio = RF24(27, 60)
 
 buffer = []
 
-fun = ['\', '|', '/', '-']
+fun = "|/-\\"
 
 # Define tun device
 #tun = TunTap(nic_type="Tun", nic_name="longge")
@@ -126,7 +126,7 @@ def tx(packet: bytes):
             #print("Frag not sent: ", frag[:2])
 
 
-def node(n=1000):
+def node(n=10000):
     
     sent = 0 
     
@@ -139,8 +139,7 @@ def node(n=1000):
 
         if ((i % 100) == 0):
             funIndex = (funIndex + 1) % 4
-           
-        print(fun[funIndex]) 
+            print(fun[funIndex]) 
         # Create data
         for _ in range(30):
             byte = random.randint(0, 255)
