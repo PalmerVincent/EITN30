@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo echo 1 > /proc/sys/net/ipv4/ip_forward
+echo 1 > /proc/sys/net/ipv4/ip_forward
 
 # Forwarding for base
 echo "In routing.sh"
