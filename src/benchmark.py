@@ -140,13 +140,15 @@ def rx():
     data = 0
     total = 0
     
-    time = 0
-    time_start = time.monotonic()
+    time_start = 0
+    time_end = 0
+    
     rx_radio.startListening()
     buffer = []
     while True:
         has_payload, _ = rx_radio.available_pipe()
         if has_payload:
+            if time_start == 0: time_start = time.monotonic()
             pSize = rx_radio.getDynamicPayloadSize()
             fragment = rx_radio.read(pSize)
             id = int.from_bytes(fragment[:2], 'big')
@@ -163,6 +165,14 @@ def rx():
                 #tun.write(packet)
                 data += len(packet)
             
+            time_end = time.monotonic()
+    
+    t = time_end - time_start
+
+    print()
+    print()
+        
+    
     
 
 
