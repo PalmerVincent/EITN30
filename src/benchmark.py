@@ -1,5 +1,7 @@
 
+import struct
 import threading
+import random
 from tuntap import TunTap
 import time
 from RF24 import RF24, RF24_PA_LOW, RF24_2MBPS, RF24_CRC_16, RF24_CRC_8
@@ -18,20 +20,22 @@ CRC_LENGTH = RF24_CRC_16
 tx_radio = RF24(17, 0)
 rx_radio = RF24(27, 10)
 
+buffer = []
+
 # Define tun device
-tun = TunTap(nic_type="Tun", nic_name="longge")
+#tun = TunTap(nic_type="Tun", nic_name="longge")
 
 
 def setup(role):
 
     # configure tun device
-    if role == 1:
+    #if role == 1:
         # Node
-        tun.config(ip="192.168.1.2", mask="255.255.255.0")
+        #tun.config(ip="192.168.1.2", mask="255.255.255.0")
 
-    if role == 0:
+    #if role == 0:
         # Base
-        tun.config(ip="192.168.1.1", mask="255.255.255.0")
+        #tun.config(ip="192.168.1.1", mask="255.255.255.0")
 
     # start radios and configure values
     if not tx_radio.begin():
@@ -120,20 +124,45 @@ def tx(packet: bytes):
             print("Frag not sent: ", frag[:2])
 
 
-def tx2():
+def node(n=10**10):
     
-    while True:
+    sent = 0 
+    
+    time_start = time.monotonic()
+    time_end = time.monotonic()
+    
+    for i in range(n):
         
         # Create data
-        data = bytes(30)
-        data
+        for _ in range(30):
+            byte = random.randint(0, 255)
+            buffer.append(struct.pack(">B", byte))
         
+        
+        packet = b''.join(buffer)
+        print(packet)
+        
+        tx(packet)
+        
+        sent += len(packet)
+        
+        buffer.clear()
+        """
         if len(buffer):
             print("Got package from tun interface:\n\t", buffer, "\n")
             tx(buffer)
+        """
+    
+    time_end = time.monotonic()
+    
+    t = time_end - time_start
+    
+    print("Sent {} bits in {} seconds".format(sent*8, t))
+    print("Throughput: ", (sent*8 / t), "bps")
+    
 
 
-def rx():
+def base():
     """ Waits for incoming packet on reading pipe 
     and forwards the packet to tun interface
     """
@@ -145,7 +174,7 @@ def rx():
     
     rx_radio.startListening()
     buffer = []
-    while True:
+    while time_end - time_start <= 4 or time_end == 0:
         has_payload, _ = rx_radio.available_pipe()
         if has_payload:
             if time_start == 0: time_start = time.monotonic()
@@ -169,14 +198,15 @@ def rx():
     
     t = time_end - time_start
 
-    print()
-    print()
+    print("{} total bits in {} seconds\t:\tReceived {} bits of data".format(total*8, t, data*8))
+    print("Data rates: {} bps (data rate), {} bps (throughput)".format((total*8 / t), (data*8 / t)))
         
     
     
 
 
 def main():
+    """
     tx_thread = threading.Thread(target=tx2, args=())
     rx_thread = threading.Thread(target=rx, args=())
 
@@ -185,10 +215,16 @@ def main():
 
     tx_thread.join()
     rx_thread.join()
-
-
-if __name__ == "__main__":
+    """
     role = int(
         input("Select role of machine. Enter '0' for base and '1' for node: "))
     setup(role)
+    if role:
+        node()
+    else: 
+        base()
+    
+
+
+if __name__ == "__main__":
     main()

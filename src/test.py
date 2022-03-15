@@ -1,5 +1,6 @@
 import struct
 import random
+import time
 
 
 def fragment(data: bytes) -> list:
@@ -33,8 +34,45 @@ def fragment(data: bytes) -> list:
     
     return fragments   
 
+def nodeTest(n=10):
+    
+    buffer = []
+    
+    sent = 0 
+    
+    time_start = time.monotonic()
+    time_end = time.monotonic()
+    
+    for i in range(n):
+        
+        # Create data
+        for _ in range(30*8):
+            byte = random.randint(0, 255)
+            buffer.append(struct.pack(">B", byte))
+            
+        
+        packet = b''.join(buffer)
+        print(packet)
+        #i = bytes(map(int, bitString.split()))
+        #sent += len(i)
+        #buffer.append(i)
+        #print(struct.pack(">b", int(bitString, 2)))
+        #data = buffer.append(struct.pack(">b", int(bitString, 2)))
+        
+        sent += len(packet)
+        
+    
+        #tx(buffer)
+        
+        buffer.clear()
+        """
+        if len(buffer):
+            print("Got package from tun interface:\n\t", buffer, "\n")
+            tx(buffer)
+        """
+    print(sent)
 
-
+ 
 def fragmentTest():
     data = [random.randint(0, 255) for _ in range(100)]
     print(bytes(data))
@@ -91,9 +129,9 @@ def packetTest():
 
     
 if __name__ == '__main__':
-    fragmentTest()
+    #fragmentTest()
     #packetTest()
-    
+    nodeTest()
     
     
     '''
