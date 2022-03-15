@@ -128,7 +128,7 @@ def tun_rx():
     """
     while True:
         buffer = tun.read()
-
+        print("read from tun", buffer)
         if len(buffer):
             print("Got package from tun interface:\n\t", buffer, "\n")
             tx(buffer)
