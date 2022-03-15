@@ -15,7 +15,7 @@ CRC_LENGTH = RF24_CRC_16
 
 # Define radios
 tx_radio = RF24(17, 0)
-rx_radio = RF24(27, 10)
+rx_radio = RF24(27, 60)
 
 # Define tun device
 tun = TunTap(nic_type="Tun", nic_name="longge")
@@ -91,7 +91,7 @@ def fragment(data: bytes) -> list:
     id = 1
 
     while data:
-        if (len(data) < 30):
+        if (len(data) <= 30):
             id = 65535
 
         fragments.append(id.to_bytes(2, 'big') + data[:FRAG_SIZE])
@@ -113,11 +113,11 @@ def tx(packet: bytes):
 
     for frag in fragments:
         result = tx_radio.write(frag)
-        if (result):
+        """if (result):
             print("Frag sent id: ", frag[:2])
         else:
             print("Frag not sent: ", frag[:2])
-
+"""
 
 def tx2():
     """ Waits for new packets from tun device
@@ -126,7 +126,7 @@ def tx2():
     while True:
         buffer = tun.read()
         if len(buffer):
-            print("Got package from tun interface:\n\t", buffer, "\n")
+            #print("Got package from tun interface:\n\t", buffer, "\n")
             tx(buffer)
 
 
@@ -142,13 +142,13 @@ def rx():
             pSize = rx_radio.getDynamicPayloadSize()
             fragment = rx_radio.read(pSize)
             id = int.from_bytes(fragment[:2], 'big')
-            print("Frag received with id: ", id)
+            #print("Frag received with id: ", id)
 
             buffer.append(fragment[2:])
 
             if id == 0xFFFF:  # packet is fragmented and this is the first fragment
                 packet = b''.join(buffer)
-                print("Packet received:\n\t", packet, "\n")
+                #print("Packet received:\n\t", packet, "\n")
                 buffer.clear()
                 tun.write(packet)
 
