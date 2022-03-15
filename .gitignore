@@ -1,3 +1,4 @@
 libboost_python3.so
 RF24
 .vscode/*
+__pycache__/*

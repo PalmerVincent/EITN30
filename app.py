@@ -1,23 +1,38 @@
-from distutils.version import Version
-import sys
+
 import threading
-import argparse
-import time
-import struct
-
-from importlib_metadata import version
 from tuntap import TunTap
-from RF24 import RF24, RF24_PA_LOW
+from RF24 import RF24, RF24_PA_LOW, RF24_2MBPS, RF24_CRC_16, RF24_CRC_8
 
+# Constants used in setup
+FRAG_SIZE = 30
+CHANNEL_NUMBER = 100
+RADIO_POWER = RF24_PA_LOW
+DATA_RATE = RF24_2MBPS
+RETRIES_COUNT = 15
+RETRIES_DELAY = 5  # 0-15
+AUTO_ACK = True
+CRC_LENGTH = RF24_CRC_16
+
+# Define radios
 tx_radio = RF24(17, 0)
 rx_radio = RF24(27, 10)
+
+# Define tun device
 tun = TunTap(nic_type="Tun", nic_name="longge")
-FRAG_SIZE = 30
 
 
 def setup(role):
-    addr = [b"base", b"node"]
 
+    # configure tun device
+    if role == 1:
+        # Node
+        tun.config(ip="192.168.1.2", mask="255.255.255.0")
+
+    if role == 0:
+        # Base
+        tun.config(ip="192.168.1.1", mask="255.255.255.0")
+
+    # start radios and configure values
     if not tx_radio.begin():
         tx_radio.printPrettyDetails()
         raise RuntimeError("tx_radio hardware is not responding")
@@ -26,26 +41,32 @@ def setup(role):
         rx_radio.printPrettyDetails()
         raise RuntimeError("rx_radio hardware is not responding")
 
-    tx_radio.setPALevel(RF24_PA_LOW)
-    rx_radio.setPALevel(RF24_PA_LOW)
+    tx_radio.setPALevel(RADIO_POWER)
+    rx_radio.setPALevel(RADIO_POWER)
 
-    if role == 1:
-        # Node
+    tx_radio.setRetries(RETRIES_DELAY, RETRIES_COUNT)
+    rx_radio.setRetries(RETRIES_DELAY, RETRIES_COUNT)
 
-        tun.config(ip="192.168.1.2", mask="255.255.255.0")
+    tx_radio.setChannel(CHANNEL_NUMBER)
+    rx_radio.setChannel(CHANNEL_NUMBER)
 
-    if role == 0:
-        # Base
-        tun.config(ip="192.168.1.1", mask="255.255.255.0")
-
-    # tx_radio.setAutoAck(False)
-    # rx_radio.setAutoAck(False)
-
-    tx_radio.openWritingPipe(addr[role])
-    rx_radio.openReadingPipe(1, addr[not role])
+    tx_radio.setDataRate(DATA_RATE)
+    rx_radio.setDataRate(DATA_RATE)
 
     tx_radio.enableDynamicPayloads()
     rx_radio.enableDynamicPayloads()
+
+    tx_radio.setAutoAck(AUTO_ACK)
+    rx_radio.setAutoAck(AUTO_ACK)
+
+    tx_radio.setCRCLength(CRC_LENGTH)
+    rx_radio.setCRCLength(CRC_LENGTH)
+
+    # Set addresses for writing and reading pipes
+    addr = [b"base", b"node"]
+
+    tx_radio.openWritingPipe(addr[role])
+    rx_radio.openReadingPipe(1, addr[not role])
 
     tx_radio.flush_tx()
     rx_radio.flush_rx()
@@ -81,6 +102,12 @@ def fragment(data: bytes) -> list:
 
 
 def tx(packet: bytes):
+    """ Transmit packet to the active writing pipe. Fragments bytes if needed.
+
+    Args:
+        packet (bytes): bytes to be transmitted
+
+    """
     tx_radio.stopListening()
     fragments = fragment(packet)
 
@@ -93,7 +120,9 @@ def tx(packet: bytes):
 
 
 def tx2():
-    # wait for new data from tun -> send the data over radio
+    """ Waits for new packets from tun device
+    and forwards the packet to radio writing pipe
+    """
     while True:
         buffer = tun.read()
         if len(buffer):
@@ -101,8 +130,10 @@ def tx2():
             tx(buffer)
 
 
-def rx2():
-    # wait for incoming data on radio -> send the data to tun interface
+def rx():
+    """ Waits for incoming packet on reading pipe 
+    and forwards the packet to tun interface
+    """
     rx_radio.startListening()
     buffer = []
     while True:
@@ -124,7 +155,7 @@ def rx2():
 
 def main():
     tx_thread = threading.Thread(target=tx2, args=())
-    rx_thread = threading.Thread(target=rx2, args=())
+    rx_thread = threading.Thread(target=rx, args=())
 
     rx_thread.start()
     tx_thread.start()
@@ -135,6 +166,6 @@ def main():
 
 if __name__ == "__main__":
     role = int(
-        input("Select role of machine. Enter '0' for base and 1 for node: "))
+        input("Select role of machine. Enter '0' for base and '1' for node: "))
     setup(role)
     main()
