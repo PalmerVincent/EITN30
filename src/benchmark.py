@@ -2,7 +2,7 @@
 import struct
 import threading
 import random
-from tuntap import TunTap
+#from tuntap import TunTap
 import time
 from RF24 import RF24, RF24_PA_LOW, RF24_2MBPS, RF24_CRC_16, RF24_CRC_8
 
@@ -18,7 +18,7 @@ CRC_LENGTH = RF24_CRC_16
 
 # Define radios
 tx_radio = RF24(17, 0)
-rx_radio = RF24(27, 10)
+rx_radio = RF24(27, 60)
 
 buffer = []
 
@@ -96,7 +96,7 @@ def fragment(data: bytes) -> list:
     id = 1
 
     while data:
-        if (len(data) < 30):
+        if (len(data) <= 30):
             id = 65535
 
         fragments.append(id.to_bytes(2, 'big') + data[:FRAG_SIZE])
@@ -174,7 +174,7 @@ def base():
     
     rx_radio.startListening()
     buffer = []
-    while time_end - time_start <= 4 or time_end == 0:
+    while time_end - time_start <= 30 or time_end == 0:
         has_payload, _ = rx_radio.available_pipe()
         if has_payload:
             if time_start == 0: time_start = time.monotonic()
