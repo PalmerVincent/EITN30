@@ -6,7 +6,7 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 echo "In routing.sh"
 
 
-sudo iptables -t nat -A POSTROUTING -o longge -j MASQUERADE
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 
 sudo iptables -A FORWARD -i eth0 -o longge -m state --state RELATED,ESTABLISHED -j ACCEPT
 
