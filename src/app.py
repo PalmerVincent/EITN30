@@ -129,11 +129,9 @@ def tx(packet: bytes):
 
 def radio_tx():
     while True:
-        cond_in.acquire()
-        while len(tun_in_queue) == 0:
-            cond_in.wait()
-        packet = tun_in_queue.pop()
-        cond_in.release()
+        with cond_in:
+            cond_in.wait_for(len(tun_in_queue) > 0)
+            packet = tun_in_queue.pop()
         tx(packet)
 
 
@@ -179,11 +177,9 @@ def radio_rx():
 def tun_tx():
 
     while True:
-        cond_out.acquire()
-        while len(tun_in_queue) == 0:
-            cond_out.wait()
-        packet = tun_out_queue.pop()
-        cond_out.release()
+        with cond_out:
+            cond_out.wait_for(len(tun_out_queue) > 0)
+            packet = tun_out_queue.pop()
         tun.write(packet)
 
 
