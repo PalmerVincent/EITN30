@@ -99,7 +99,7 @@ def fragment(data: bytes) -> list:
     id = 1
 
     while data:
-        if (len(data) < 30):
+        if (len(data) <= 30):
             id = 65535
 
         fragments.append(id.to_bytes(2, 'big') + data[:FRAG_SIZE])
