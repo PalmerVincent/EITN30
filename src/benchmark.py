@@ -18,7 +18,7 @@ CRC_LENGTH = RF24_CRC_16
 
 # Define radios
 tx_radio = RF24(17, 0)
-rx_radio = RF24(27, 10)
+rx_radio = RF24(27, 60)
 
 buffer = []
 
@@ -96,7 +96,7 @@ def fragment(data: bytes) -> list:
     id = 1
 
     while data:
-        if (len(data) < 30):
+        if (len(data) <= 30):
             id = 65535
 
         fragments.append(id.to_bytes(2, 'big') + data[:FRAG_SIZE])
@@ -119,12 +119,12 @@ def tx(packet: bytes):
     for frag in fragments:
         result = tx_radio.write(frag)
         if (result):
-            print("Frag sent id: ", frag[:2])
+            #print("Frag sent id: ", frag[:2])
         else:
-            print("Frag not sent: ", frag[:2])
+            #print("Frag not sent: ", frag[:2])
 
 
-def node(n=10**10):
+def node(n=1000000):
     
     sent = 0 
     
@@ -140,7 +140,7 @@ def node(n=10**10):
         
         
         packet = b''.join(buffer)
-        print(packet)
+        #print(packet)
         
         tx(packet)
         
@@ -174,14 +174,14 @@ def base():
     
     rx_radio.startListening()
     buffer = []
-    while time_end - time_start <= 4 or time_end == 0:
+    while time_end - time_start <= 30 or time_end == 0:
         has_payload, _ = rx_radio.available_pipe()
         if has_payload:
             if time_start == 0: time_start = time.monotonic()
             pSize = rx_radio.getDynamicPayloadSize()
             fragment = rx_radio.read(pSize)
             id = int.from_bytes(fragment[:2], 'big')
-            print("Frag received with id: ", id)
+            #print("Frag received with id: ", id)
 
             buffer.append(fragment[2:])
             
@@ -189,7 +189,7 @@ def base():
 
             if id == 0xFFFF:  # packet is fragmented and this is the first fragment
                 packet = b''.join(buffer)
-                print("Packet received:\n\t", packet, "\n")
+                #print("Packet received:\n\t", packet, "\n")
                 buffer.clear()
                 #tun.write(packet)
                 data += len(packet)
@@ -198,7 +198,7 @@ def base():
     
     t = time_end - time_start
 
-    print("{} total bits in {} seconds\t:\tReceived {} bits of data".format(total*8, t, data*8))
+    print("{} total bits in {} seconds: Received {} bits of data".format(total*8, t, data*8))
     print("Data rates: {} bps (data rate), {} bps (throughput)".format((total*8 / t), (data*8 / t)))
         
     
@@ -220,8 +220,10 @@ def main():
         input("Select role of machine. Enter '0' for base and '1' for node: "))
     setup(role)
     if role:
+        print("Starting benchmark as node! \n")
         node()
     else: 
+        print("Starting benchmark as base! \n")
         base()
     
 
