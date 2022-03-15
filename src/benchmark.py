@@ -1,85 +1,184 @@
-import random
-import time
+
 import threading
 from tuntap import TunTap
+import time
 from RF24 import RF24, RF24_PA_LOW, RF24_2MBPS, RF24_CRC_16, RF24_CRC_8
 
-def setRole():
-    role = ""
-    while True:
-        role = input("Enter device role, 'B' for base and 'M' for mobile").upper()
-        if role != "B" and role != "M":
-            print("Invalid input, please try again.")
+# Constants used in setup
+FRAG_SIZE = 30
+CHANNEL_NUMBER = 100
+RADIO_POWER = RF24_PA_LOW
+DATA_RATE = RF24_2MBPS
+RETRIES_COUNT = 15
+RETRIES_DELAY = 5  # 0-15
+AUTO_ACK = True
+CRC_LENGTH = RF24_CRC_16
+
+# Define radios
+tx_radio = RF24(17, 0)
+rx_radio = RF24(27, 10)
+
+# Define tun device
+tun = TunTap(nic_type="Tun", nic_name="longge")
+
+
+def setup(role):
+
+    # configure tun device
+    if role == 1:
+        # Node
+        tun.config(ip="192.168.1.2", mask="255.255.255.0")
+
+    if role == 0:
+        # Base
+        tun.config(ip="192.168.1.1", mask="255.255.255.0")
+
+    # start radios and configure values
+    if not tx_radio.begin():
+        tx_radio.printPrettyDetails()
+        raise RuntimeError("tx_radio hardware is not responding")
+
+    if not rx_radio.begin():
+        rx_radio.printPrettyDetails()
+        raise RuntimeError("rx_radio hardware is not responding")
+
+    tx_radio.setPALevel(RADIO_POWER)
+    rx_radio.setPALevel(RADIO_POWER)
+
+    tx_radio.setRetries(RETRIES_DELAY, RETRIES_COUNT)
+    rx_radio.setRetries(RETRIES_DELAY, RETRIES_COUNT)
+
+    tx_radio.setChannel(CHANNEL_NUMBER)
+    rx_radio.setChannel(CHANNEL_NUMBER)
+
+    tx_radio.setDataRate(DATA_RATE)
+    rx_radio.setDataRate(DATA_RATE)
+
+    tx_radio.enableDynamicPayloads()
+    rx_radio.enableDynamicPayloads()
+
+    tx_radio.setAutoAck(AUTO_ACK)
+    rx_radio.setAutoAck(AUTO_ACK)
+
+    tx_radio.setCRCLength(CRC_LENGTH)
+    rx_radio.setCRCLength(CRC_LENGTH)
+
+    # Set addresses for writing and reading pipes
+    addr = [b"base", b"node"]
+
+    tx_radio.openWritingPipe(addr[role])
+    rx_radio.openReadingPipe(1, addr[not role])
+
+    tx_radio.flush_tx()
+    rx_radio.flush_rx()
+
+
+def fragment(data: bytes) -> list:
+    """ Fragments incoming binary data in bytes
+
+    Args:
+        data (bytes): Binary data converted with "bytes"
+
+    Returns:
+        list: list of fragments 
+    """
+
+    fragments = []
+    dataLength = len(data)
+
+    if (dataLength == 0):
+        return
+
+    id = 1
+
+    while data:
+        if (len(data) < 30):
+            id = 65535
+
+        fragments.append(id.to_bytes(2, 'big') + data[:FRAG_SIZE])
+        data = data[FRAG_SIZE:]
+        id += 1
+
+    return fragments
+
+
+def tx(packet: bytes):
+    """ Transmit packet to the active writing pipe. Fragments bytes if needed.
+
+    Args:
+        packet (bytes): bytes to be transmitted
+
+    """
+    tx_radio.stopListening()
+    fragments = fragment(packet)
+
+    for frag in fragments:
+        result = tx_radio.write(frag)
+        if (result):
+            print("Frag sent id: ", frag[:2])
         else:
-            print("'{}' entered, starting device...".format(role))
-            break
-    return role
+            print("Frag not sent: ", frag[:2])
 
-def generateBits(length: int, frameReader: FrameReader):
-    bitString = ""
-    for i in range(length):
-        bitString += str(random.choice([0, 1]))
-    hexString = frameReader.bits2bytes(bitString).hex()
-    return bitString, hexString
 
-def operateBase(tun: TunDevice):
-    # Measure how many bits we receive, including headers
-    rx = tun.radios[1]
-    rx.startListening()
+def tx2():
+    
+    while True:
+        
+        # Create data
+        data = bytes(30)
+        data
+        
+        if len(buffer):
+            print("Got package from tun interface:\n\t", buffer, "\n")
+            tx(buffer)
 
+
+def rx():
+    """ Waits for incoming packet on reading pipe 
+    and forwards the packet to tun interface
+    """
     data = 0
     total = 0
+    
+    time = 0
+    time_start = time.monotonic()
+    rx_radio.startListening()
+    buffer = []
+    while True:
+        has_payload, _ = rx_radio.available_pipe()
+        if has_payload:
+            pSize = rx_radio.getDynamicPayloadSize()
+            fragment = rx_radio.read(pSize)
+            id = int.from_bytes(fragment[:2], 'big')
+            print("Frag received with id: ", id)
 
-    startTime = 0
-    endTime = 0
-    while time.monotonic() - endTime <= 2 or endTime == 0:
-        hasPayload, _ = rx.available_pipe()
-        if hasPayload:
-            if startTime == 0: startTime = time.monotonic()
-            rcvd = rx.read(rx.payloadSize)
-            bits = tun.fr.bytes2bits(rcvd)
-            # print(bits)
-            total += len(bits)
-            data += len(tun.fr.data(bits))
+            buffer.append(fragment[2:])
+            
+            total += len(fragment)
 
-            endTime = time.monotonic() # update end time each time we get new message
+            if id == 0xFFFF:  # packet is fragmented and this is the first fragment
+                packet = b''.join(buffer)
+                print("Packet received:\n\t", packet, "\n")
+                buffer.clear()
+                #tun.write(packet)
+                data += len(packet)
+            
+    
 
-    t = endTime - startTime
-    print("{} total bits in {} seconds\t:\tReceived {} bits of data".format(total, t, data))
-    print("Data rates: {} bps (data rate), {} bps (throughput)".format((total / t), (data / t)))
 
-def operateMobile(tun: TunDevice, n = 1000):
-    # init(tun)
-    bitsSent = 0
-    startTime = time.monotonic()
-    lastTime = time.monotonic() # queue test timer    
+def main():
+    tx_thread = threading.Thread(target=tx2, args=())
+    rx_thread = threading.Thread(target=rx, args=())
 
-    for i in range(n):
-        # msgLength = random.randint(185, 2944)   # this way we send 2-16 messages
-        msgLength = 2944
-        bitVal, hexVal = generateBits(msgLength, tun.fr)
-        bitsSent += len(bitVal)
-        tun.sendBits(bitVal)
+    rx_thread.start()
+    tx_thread.start()
 
-    endTime = time.monotonic()
-    t = endTime - startTime
-    print("Sent {} bits in {} seconds".format(bitsSent, t))
-    print("Throughput:", (bitsSent / t), "bps")
+    tx_thread.join()
+    rx_thread.join()
+
 
 if __name__ == "__main__":
-    # each data packet can contain 184 bits of data
-    # there are four bits = 16 possible fragments
-    # Max data per "file": 184 * 16 =  2944 bits
-    
-    role = setRole()
-    mask = "255.255.255.0"
-    tunData = ["192.168.2.1", mask] if role == "B" else ["192.168.2.2", mask]
-    tun = TunDevice(tunData, [RF24(17, 0), RF24(27, 10)])
-
-    # tThread = threading.Thread(target=tun.transmit, args=())
-    # rThread = threading.Thread(target=tun.receive, args=())
-    # tThread.start()
-    # rThread.start()
-
-    if role == "B": operateBase(tun)
-    else: operateMobile(tun)
+    role = int(
+        input("Select role of machine. Enter '0' for base and '1' for node: "))
+    setup(role)
+    main()
