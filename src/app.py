@@ -158,7 +158,7 @@ def rx():
 
 
 def main():
-    tx_thread = threading.Thread(target=tx2, args=())
+    tx_thread = threading.Thread(target=tun_rx, args=())
     rx_thread = threading.Thread(target=rx, args=())
 
     rx_thread.start()
