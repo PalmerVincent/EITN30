@@ -21,12 +21,11 @@ rx_radio = RF24(27, 10)
 # Define tun device
 tun = TunTap(nic_type="Tun", nic_name="longge")
 
-mu_in = threading.Lock()
-cond_in = threading.Condition(mu_in)
+
+cond_in = threading.Condition()
 tun_in_queue = []
 
-mu_out = threading.Lock()
-cond_out = threading.Condition(mu_out)
+cond_out = threading.Condition()
 tun_out_queue = []
 
 
@@ -130,11 +129,11 @@ def tx(packet: bytes):
 
 def radio_tx():
     while True:
-        mu_in.acquire()
+        cond_in.acquire()
         while len(tun_in_queue) == 0:
             cond_in.wait()
         packet = tun_in_queue.pop()
-        mu_in.release()
+        cond_in.release()
         tx(packet)
 
 
@@ -144,9 +143,9 @@ def tun_rx():
     """
     while True:
         buffer = tun.read()
-        mu_in.acquire()
+        cond_in.acquire()
         tun_in_queue.append(buffer)
-        mu_in.release()
+        cond_in.release()
         cond_in.notify_all()
         print("Got package from tun interface:\n\t", buffer, "\n")
 
@@ -171,20 +170,20 @@ def radio_rx():
                 packet = b''.join(buffer)
                 print("Packet received:\n\t", packet, "\n")
                 buffer.clear()
-                mu_out.acquire()
+                cond_out.acquire()
                 tun_out_queue.append(packet)
-                mu_out.release()
-                cond_out.notifyAll()
+                cond_out.release()
+                cond_out.notify_all()
 
 
 def tun_tx():
 
     while True:
-        mu_out.acquire()
+        cond_out.acquire()
         while len(tun_in_queue) == 0:
             cond_out.wait()
         packet = tun_out_queue.pop()
-        mu_out.release()
+        cond_out.release()
         tun.write(packet)
 
 
