@@ -1,9 +1,11 @@
 
 import threading
 import time
+import subprocess
 from tuntap import TunTap
 from RF24 import RF24, RF24_PA_LOW, RF24_2MBPS, RF24_CRC_16, RF24_CRC_8
 
+sudo_password = 'LangGeNot5G'
 # Constants used in setup
 FRAG_SIZE = 30
 CHANNEL_NUMBER = 100
@@ -36,9 +38,14 @@ def setup(role):
         # Node
         tun.config(ip="192.168.1.2", mask="255.255.255.0")
 
+        command = 'sudo ip route add 8.8.8.8 via 192.168.1.1 dev longge'.split()
+        subprocess.run(command, shell=True)
+
+
     if role == 0:
         # Base
         tun.config(ip="192.168.1.1", mask="255.255.255.0")
+
 
     # start radios and configure values
     if not tx_radio.begin():
