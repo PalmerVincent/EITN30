@@ -38,13 +38,18 @@ def setup(role):
         # Node
         tun.config(ip="192.168.1.2", mask="255.255.255.0")
 
-        command = 'sudo ip route add 8.8.8.8 via 192.168.1.1 dev longge'.split()
+        command = 'ip route add 8.8.8.8 via 192.168.1.1 dev longge'
         subprocess.run(command, shell=True)
 
 
     if role == 0:
         # Base
         tun.config(ip="192.168.1.1", mask="255.255.255.0")
+        subprocess.run('iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE', shell=True)
+        command = '''sudo iptables -A FORWARD -i eth0 -o longge -m state
+         --state RELATED,ESTABLISHED -j ACCEPT'''
+        subprocess.run(command,shell=True)
+        subprocess.run('sudo iptables -A FORWARD -i longge -o eth0 -j ACCEPT', shell=True)
 
 
     # start radios and configure values

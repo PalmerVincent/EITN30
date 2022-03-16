@@ -111,22 +111,22 @@ echo "Install complete"
 
 echo "Setting up Tun device and forwarding"
 
-cd ~/git/EITN30/pi_config
-echo "Enter base for base node: " 
-read base
+#cd ~/git/EITN30/pi_config
+#echo "Enter base for base node: " 
+#read base
 
 
-if [[ $base == "base" ]]
-then
-    echo "You entered $base"
-    sudo ip tuntap add mode tun dev longge
-    sudo ip addr add 192.168.1.1/24 dev longge
-    sudo ip link set dev longge up
-    ./routing.sh
-else
-    echo "You entered not base"
-    sudo ip tuntap add mode tun dev longge
-    sudo ip addr add 192.168.1.2/24 dev longge
-    sudo ip link set dev longge up
-    sudo ip route add 8.8.8.8 via 192.168.1.1 dev longge
-fi
+#if [[ $base == "base" ]]
+#then
+#    echo "You entered $base"
+#    sudo ip tuntap add mode tun dev longge
+#    sudo ip addr add 192.168.1.1/24 dev longge
+#    sudo ip link set dev longge up
+#    ./routing.sh
+#else
+#    echo "You entered not base"
+#    sudo ip tuntap add mode tun dev longge
+#    sudo ip addr add 192.168.1.2/24 dev longge
+#    sudo ip link set dev longge up
+#    sudo ip route add 8.8.8.8 via 192.168.1.1 dev longge
+#fi
