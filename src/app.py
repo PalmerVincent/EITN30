@@ -18,7 +18,7 @@ CRC_LENGTH = RF24_CRC_16
 
 # Define radios
 tx_radio = RF24(17, 0)
-rx_radio = RF24(27, 10)
+rx_radio = RF24(27, 60)
 
 # Define tun device
 tun = TunTap(nic_type="Tun", nic_name="longge")
@@ -46,8 +46,7 @@ def setup(role):
         # Base
         tun.config(ip="192.168.1.1", mask="255.255.255.0")
         subprocess.run('iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE', shell=True)
-        command = '''sudo iptables -A FORWARD -i eth0 -o longge -m state
-         --state RELATED,ESTABLISHED -j ACCEPT'''
+        command = 'sudo iptables -A FORWARD -i eth0 -o longge -m state --state RELATED,ESTABLISHED -j ACCEPT'
         subprocess.run(command,shell=True)
         subprocess.run('sudo iptables -A FORWARD -i longge -o eth0 -j ACCEPT', shell=True)
 
