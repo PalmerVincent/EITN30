@@ -5,8 +5,8 @@ import time
 import subprocess
 from tuntap import TunTap
 from RF24 import RF24, RF24_PA_LOW, RF24_2MBPS, RF24_CRC_16, RF24_CRC_8
-import numpy as np
-import matplotlib.pyplot as plt
+#import numpy as np
+#import matplotlib.pyplot as plt
 
 sudo_password = 'LangGeNot5G'
 # Constants used in setup
@@ -21,19 +21,19 @@ CRC_LENGTH = RF24_CRC_16
 
 # Define radios
 tx_radio = RF24(17, 0)
-rx_radio = RF24(27, 60)
+rx_radio = RF24(27, 10)
 
 # Define tun device
 tun = TunTap(nic_type="Tun", nic_name="longge")
 
 
 cond_in = threading.Condition()
-tun_in_queue = queue()
+tun_in_queue = queue.Queue()
 
 cond_out = threading.Condition()
-tun_out_queue = queue()
+tun_out_queue = queue.Queue()
 
-time_axis = np(np.linspace(0,1,0.001), axis=1)
+#time_axis = np(np.linspace(0,1,0.001), axis=1)
 def setup(role):
 
     # configure tun device
