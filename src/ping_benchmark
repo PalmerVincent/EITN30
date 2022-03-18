@@ -3,9 +3,19 @@ delay=1.005
 packets=''
 latency=''
 sudo apt update
-for j in {1..100}
+for j in {1..90}
 do
-    p=$(sudo ping 192.168.1.1 -c 11 -i $delay)
+    echo $j
+    p=$(sudo ping 192.168.1.1 -c 10 -i $delay)
+    packets+=':'$(echo "$p" | grep -E '[0-9] packets(.*)')
+    latency+=':'$(echo "$p" | grep -E '^rtt')
+    delay=$(echo 0$(echo "$delay-0.01"| bc))
+done
+
+for k in {1..10}
+do
+    echo $k
+    p=$(sudo ping 192.168.1.1 -c 500 -i $delay)
     packets+=':'$(echo "$p" | grep -E '[0-9] packets(.*)')
     latency+=':'$(echo "$p" | grep -E '^rtt')
     delay=$(echo 0$(echo "$delay-0.01"| bc))
