@@ -81,7 +81,7 @@ echo ""
 # Installing dependancies
 
 echo $pass | sudo -S apt-get update
-echo $pass | sudo -S apt-get install -y python3-dev libboost-python-dev python3-pip python3-rpi.gpio build-essential
+echo $pass | sudo -S apt-get install -y python3-dev libboost-python-dev python3-pip python3-rpi.gpio build-essential libatlas-base-dev
 
 python3 -m pip install --upgrade pip setuptools autopep8 python-pytuntap
 
