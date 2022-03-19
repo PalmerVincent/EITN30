@@ -1,15 +1,15 @@
-nbr_ping=25
-delay=1.005
+nbr_ping=50
+delay=0.10005
 packets=''
 latency=''
 sudo apt update
 for j in {1..95}
 do
     echo $j
-    p=$(sudo ping 192.168.1.1 -c 10 -i $delay)
+    p=$(sudo ping 192.168.1.1 -c $nbr_ping -i $delay)
     packets+=':'$(echo "$p" | grep -E '[0-9] packets(.*)')
     latency+=':'$(echo "$p" | grep -E '^rtt')
-    delay=$(echo 0$(echo "$delay-0.01"| bc))
+    delay=$(echo 0$(echo "$delay-0.0005"| bc))
 done
 
 for k in {1..5}
