@@ -1,4 +1,4 @@
-
+import subprocess
 import threading
 import time
 import subprocess
@@ -32,7 +32,6 @@ tun_out_queue = []
 
 
 def setup(role):
-
     # configure tun device
     if role == 1:
         # Node
@@ -49,7 +48,6 @@ def setup(role):
         command = 'sudo iptables -A FORWARD -i eth0 -o longge -m state --state RELATED,ESTABLISHED -j ACCEPT'
         subprocess.run(command,shell=True)
         subprocess.run('sudo iptables -A FORWARD -i longge -o eth0 -j ACCEPT', shell=True)
-
 
     # start radios and configure values
     if not tx_radio.begin():
@@ -153,11 +151,9 @@ def tun_rx():
     """
     while True:
         buffer = tun.read()
-
-        with cond_in:
-            tun_in_queue.append(buffer)
-            cond_in.notify()
-        # print("Got package from tun interface:\n\t", buffer, "\n")
+        if len(buffer):
+            #print("Got package from tun interface:\n\t", buffer, "\n")
+            tx(buffer)
 
 
 def radio_rx():
@@ -172,13 +168,13 @@ def radio_rx():
             pSize = rx_radio.getDynamicPayloadSize()
             fragment = rx_radio.read(pSize)
             id = int.from_bytes(fragment[:2], 'big')
-            # print("Frag received with id: ", id)
+            #print("Frag received with id: ", id)
 
             buffer.append(fragment[2:])
 
             if id == 0xFFFF:  # packet is fragmented and this is the first fragment
                 packet = b''.join(buffer)
-                # print("Packet received:\n\t", packet, "\n")
+                #print("Packet received:\n\t", packet, "\n")
                 buffer.clear()
 
                 with cond_out:
