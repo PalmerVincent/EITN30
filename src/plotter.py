@@ -28,13 +28,15 @@ def main():
         
     axs[0].plot(x, latency)
     axs[0].set_xlim(1.005, 0.005)
+    axs[0].set_ylim(-1000, 10000)
     axs[0].set_ylabel("Average latency (ms)")
     
     axs[1].plot(x, packet)
     axs[1].set_xlim(1.005, 0.005)
+    axs[1].set_ylim(-10, 100)
     axs[1].set_ylabel("Average packet loss (%)")
     
-    axs[1].set_xlabel("Test")
+    axs[1].set_xlabel("Time per packet")
     
     plt.show()
 
